@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+
+__VERSION__ = "0.10"
+
+
 import urllib, urllib2, base64, hmac
 from hashlib import sha1
 from xml.sax.saxutils import escape, quoteattr
 from xml.dom.minidom import Document
-
-__VERSION__ = "0.10"
 
 
 def underscore_to_camelcase(value):
@@ -14,6 +17,14 @@ def underscore_to_camelcase(value):
 
     c = camelcase()
     return "".join(c.next()(x) if x else '_' for x in value.split("_"))
+
+
+class RESTException(Exception):
+    pass
+
+
+# REST Helpers
+# ===========================================================================
 
 class HTTPErrorProcessor(urllib2.HTTPErrorProcessor):
     def https_response(self, request, response):
@@ -119,8 +130,6 @@ class REST:
 
 # RESTXML Response Helpers
 # ===========================================================================
-class RESTException(Exception):
-    pass
 
 
 class Verb:
@@ -340,28 +349,6 @@ class Number(Verb):
     def __init__(self, number, send_digits=None, **kwargs):
         Verb.__init__(self, send_digits=send_digits, **kwargs)
         self.body = number
-
-
-class Sms(Verb):
-    """
-    Send a Sms Message to a phone number
-
-    to: whom to send message to, defaults based on the direction of the call
-    sender: whom to send message from.
-    action: url to request after the message is queued
-    method: submit to 'action' url using GET or POST
-    status_callback: url to hit when the message is actually sent
-    """
-    GET = 'GET'
-    POST = 'POST'
-
-    def __init__(self, msg, to=None, sender=None, method=None, action=None,
-        status_callback=None, **kwargs):
-        Verb.__init__(self, action=action, method=method, to=to, sender=sender,
-            status_callback=status_callback, **kwargs)
-        if method and (method != self.GET and method != self.POST):
-            raise RESTException("Invalid method parameter, must be GET or POST")
-        self.body = msg
 
 
 class Conference(Verb):

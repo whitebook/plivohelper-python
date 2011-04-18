@@ -15,3 +15,13 @@ python src/rest_server.py
 **Run Outbound Server**
 
 python src/outbound_server.py
+
+
+# Credits
+
+Plivo-REST-Helper is derived, and uses code from [Twilio Python Helper](https://github.com/twilio/twilio-python)
+
+
+# License
+
+The  Plivo-REST-Helper Library is distributed under the MIT License

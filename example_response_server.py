@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 
-import resthelpers
+import resthelper
 
 response_server = Flask("ResponseServer")
 response_server.debug = True
@@ -12,7 +12,7 @@ def page_not_found(error):
 
 
 def create_rest_xml():
-    r = resthelpers.Response()
+    r = resthelper.Response()
     r.add_pause(length=10)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
@@ -20,7 +20,7 @@ def create_rest_xml():
     return r
 
 def create_redirect_rest_xml():
-    r = resthelpers.Response()
+    r = resthelper.Response()
     r.add_pause(length=10)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
     r.add_hangup()

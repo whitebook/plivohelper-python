@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import resthelpers
+import resthelper
 
 
 #URL of the Rest Telefonie service
@@ -13,7 +13,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 originate_dial_string = "bridge_early_media=true,hangup_after_bridge=true"
 
 # Create a REST object
-rest = resthelpers.REST(REST_API_URL, SID, AUTH_TOKEN)
+rest = resthelper.REST(REST_API_URL, SID, AUTH_TOKEN)
 
 # Initiate a new outbound call to user/1000 using a HTTP POST
 call_params = {

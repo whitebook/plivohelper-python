@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import resthelpers
+import resthelper
 
 # Sid and AuthToken
 ACCOUNT_SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 ACCOUNT_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 
 # Create a Utils object
-utils = resthelpers.Utils(ACCOUNT_SID, ACCOUNT_TOKEN)
+utils = resthelper.Utils(ACCOUNT_SID, ACCOUNT_TOKEN)
 
 # ===========================================================================
 # 1. Validate the request from server
