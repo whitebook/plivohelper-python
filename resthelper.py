@@ -224,8 +224,8 @@ class Verb:
     def add_conference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def add_sms(self, msg, **kwargs):
-        return self.append(Sms(msg, **kwargs))
+    def add_recordsession(self, **kwargs):
+        return self.append(RecordSession(**kwargs))
 
 
 class Response(Verb):
@@ -310,6 +310,14 @@ class Redirect(Verb):
 class Hangup(Verb):
     """
     Hangup the call
+    """
+    def __init__(self, **kwargs):
+        Verb.__init__(self)
+
+
+class RecordSession(Verb):
+    """
+    Record the call session
     """
     def __init__(self, **kwargs):
         Verb.__init__(self)

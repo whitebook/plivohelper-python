@@ -22,6 +22,7 @@ def create_rest_xml():
 def create_redirect_rest_xml():
     r = resthelper.Response()
     r.add_pause(length=10)
+    r.add_record()
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
     r.add_hangup()
     return r
