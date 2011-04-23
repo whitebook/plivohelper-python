@@ -29,17 +29,23 @@ print r
 # ===========================================================================
 # Using Gather, Redirect
 r = resthelper.Response()
-g = r.append(resthelper.Gather(num_digits=1))
-g.append(resthelper.Say("Press 1"))
-r.append(resthelper.Redirect())
+g = r.add_gather(num_digits=25, timeout=25, play_beep='true')
+g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
+r.add_pause(length=5)
+r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
+r.add_record()
+r.add_hangup()
 print r
 
 """ outputs:
 <Response>
-    <Gather numDigits="1">
-        <Say>Press 1</Say>
+    <Gather numdigits="1">
+        <Play loop="2">/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav</Play>
     </Gather>
-    <Redirect/>
+    <Pause length="5"/>
+    <Play loop="2">/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav</Play>
+    <Record/>
+    <Hangup/>
 </Response>
 """
 

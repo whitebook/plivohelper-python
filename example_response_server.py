@@ -13,17 +13,29 @@ def page_not_found(error):
 
 def create_rest_xml():
     r = resthelper.Response()
-    r.add_pause(length=10)
-    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
+    r.add_pause(length=3)
+    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
     r.add_hangup()
     return r
 
+
 def create_redirect_rest_xml():
     r = resthelper.Response()
-    r.add_pause(length=10)
-    r.add_record()
+    g = r.add_gather(numDigits=25, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
+    g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=1)
+    g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
+    r.add_pause(length=5)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
+    r.add_record()
+    r.add_hangup()
+    return r
+
+
+def create_gather_digits():
+    r = resthelper.Response()
+    r.add_pause(length=5)
+    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
     r.add_hangup()
     return r
 
@@ -63,6 +75,15 @@ def rest_redirect_xml_response():
     # Post params- Same params as rest_xml_response()
     response = create_redirect_rest_xml()
     return render_template('response_template.xml', response=response)
+
+
+@response_server.route('/gather/dtmf/', methods=['GET', 'POST'])
+def gather_digits():
+    # Post params- Same params as rest_xml_response() with additional
+    # 'Digit' = input digts from user
+    response = create_gather_digits()
+    return render_template('response_template.xml', response=response)
+
 
 
 if __name__ == '__main__':

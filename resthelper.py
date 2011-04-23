@@ -9,16 +9,6 @@ from xml.sax.saxutils import escape, quoteattr
 from xml.dom.minidom import Document
 
 
-def underscore_to_camelcase(value):
-    def camelcase():
-        yield str.lower
-        while True:
-            yield str.capitalize
-
-    c = camelcase()
-    return "".join(c.next()(x) if x else '_' for x in value.split("_"))
-
-
 class RESTException(Exception):
     pass
 
@@ -147,8 +137,7 @@ class Verb:
             if k == "sender":
                 k = "from"
             if v != None:
-                camel_k = underscore_to_camelcase(k)
-                self.attrs[camel_k] = unicode(v)
+                self.attrs[k] = unicode(v)
 
     def __repr__(self):
         """
@@ -344,7 +333,7 @@ class Gather(Verb):
             **kwargs)
         if method and (method != self.GET and method != self.POST):
             raise RESTException("Invalid method parameter, must be 'GET' or 'POST'")
-        self.nestables = ['Say', 'Play', 'Pause']
+        self.nestables = ['Say', 'Play']
 
 
 class Number(Verb):
