@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import resthelper
+import plivohelper
 
 # ===========================================================================
 # Using Say, Dial, and Play
-r = resthelper.Response()
-r.append(resthelper.Say("Hello World", voice=resthelper.Say.WOMAN, language=resthelper.Say.ENGLISH, loop=10))
-r.append(resthelper.Dial("4155551212", time_limit=45))
-r.append(resthelper.Play("http://www.mp3.com"))
+r = plivohelper.Response()
+r.append(plivohelper.Say("Hello World", voice=plivohelper.Say.WOMAN, language=plivohelper.Say.ENGLISH, loop=10))
+r.append(plivohelper.Dial("4155551212", time_limit=45))
+r.append(plivohelper.Play("http://www.mp3.com"))
 print r
 
 """ outputs:
@@ -19,8 +19,8 @@ print r
 """
 
 # The same XML can be created above using the convenience methods
-r = resthelper.Response()
-r.add_say("Hello World", voice=resthelper.Say.WOMAN, language=resthelper.Say.ENGLISH, loop=10)
+r = plivohelper.Response()
+r.add_say("Hello World", voice=plivohelper.Say.WOMAN, language=plivohelper.Say.ENGLISH, loop=10)
 r.add_dial("4155551212", time_limit=45)
 r.add_play("http://www.mp3.com")
 print r
@@ -28,7 +28,7 @@ print r
 
 # ===========================================================================
 # Using Gather, Redirect
-r = resthelper.Response()
+r = plivohelper.Response()
 g = r.add_gather(num_digits=25, timeout=25, play_beep='true')
 g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
 r.add_pause(length=5)
@@ -51,8 +51,8 @@ print r
 
 # ===========================================================================
 # Adding a Say verb multiple times
-r = resthelper.Response()
-s = resthelper.Say("Press 1")
+r = plivohelper.Response()
+s = plivohelper.Say("Press 1")
 r.append(s)
 r.append(s)
 print r
@@ -68,8 +68,8 @@ print r
 # You may want to add an attribute to a verb that the library doesn't support.
 # To set arbitrary attribute / value pairs, just include the new attribute
 # as a named parameter
-r = resthelper.Response()
-r.append(resthelper.Redirect(crazy="delicious"))
+r = plivohelper.Response()
+r.append(plivohelper.Redirect(crazy="delicious"))
 print r
 
 """ outputs:

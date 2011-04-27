@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 
-import resthelper
+import plivohelper
 
 response_server = Flask("ResponseServer")
 response_server.debug = True
@@ -12,7 +12,7 @@ def page_not_found(error):
 
 
 def create_rest_xml():
-    r = resthelper.Response()
+    r = plivohelper.Response()
     r.add_pause(length=3)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
@@ -21,7 +21,7 @@ def create_rest_xml():
 
 
 def create_redirect_rest_xml():
-    r = resthelper.Response()
+    r = plivohelper.Response()
     g = r.add_gather(numDigits=25, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=1)
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
@@ -33,7 +33,7 @@ def create_redirect_rest_xml():
 
 
 def create_gather_digits():
-    r = resthelper.Response()
+    r = plivohelper.Response()
     r.add_pause(length=5)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
     r.add_hangup()
