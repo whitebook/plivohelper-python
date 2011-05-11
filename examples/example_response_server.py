@@ -1,17 +1,29 @@
 from flask import Flask, request, render_template
-
 import plivohelper
+import os
 
 response_server = Flask("ResponseServer")
 response_server.debug = True
 
+"""
+This is a simple example which demonstrate how easy you can build a light HTTP 
+server using Flask which will return formatted XML to command the Plivo Server
 
-@response_server.errorhandler(404)
-def page_not_found(error):
-    return 'This URL does not exist', 404
+By default the HTTP Server will be listening on http://127.0.0.1:5000
 
+The following URLs are implemented:
+    * /
+    * /ringing/
+    * /answered/
+    * /redirect/answered/
+    * /gather/dtmf/
 
-def create_rest_xml():
+"""
+
+# Helper function to create IVR and return rest XML
+
+def create_ivr_example():
+    """Create a simple IVR which pause and play an audio"""
     r = plivohelper.Response()
     r.add_pause(length=3)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
@@ -20,7 +32,8 @@ def create_rest_xml():
     return r
 
 
-def create_redirect_rest_xml():
+def create_ivr_example_redirect():
+    """Create an IVR which will gather DTMF when calling an extra URL and play few audio files"""
     r = plivohelper.Response()
     g = r.add_gather(numDigits=25, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=1)
@@ -32,29 +45,49 @@ def create_redirect_rest_xml():
     return r
 
 
-def create_gather_digits():
+def create_ivr_gather_digits():
+    """ Create an IVR which on which we are gathering DTMF, see call in create_ivr_example_redirect"""
     r = plivohelper.Response()
     r.add_pause(length=5)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
-    r.add_hangup()
+    #r.add_hangup()
     return r
 
 
+
+# URLs Implementation
+
+@response_server.errorhandler(404)
+def page_not_found(error):
+    """This implemente an error page when page aren't found"""
+    print "404 page not found"
+    return 'This URL does not exist', 404
+    
+
 @response_server.route('/')
 def home():
-    return "This is an example of a server return RESTXML!"
+    """Implement root url / """
+    return "This is an example of an http server returning RESTXML!"
 
 
 @response_server.route('/ringing/', methods=['GET', 'POST'])
 def call_ringing():
+    """Implement ringing URL"""
     # Post params- 'to': ringing number, 'request_uuid': request id given at the time of api call
+    print "We got a ringing notification"
     return "OK"
 
 
 @response_server.route('/hangup/', methods=['GET', 'POST'])
 def call_hangup():
+    """Implement the hangup URL"""
     # Post params- 'request_uuid': request id given at the time of api call,
     #               'call_uuid': unique id of call, 'reason': reason of hangup
+    #request_uuid, call_uuid, reason
+    if request.form:
+        print "request_uuid = " + request.form['request_uuid']
+        print "call_uuid = " + request.form['call_uuid']
+        print "reason = " + request.form['reason']
     return "OK"
 
 
@@ -66,14 +99,14 @@ def rest_xml_response():
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
 
-    response = create_rest_xml()
+    response = create_ivr_example()
     return render_template('response_template.xml', response=response)
 
 
 @response_server.route('/redirect/answered/', methods=['GET', 'POST'])
 def rest_redirect_xml_response():
     # Post params- Same params as rest_xml_response()
-    response = create_redirect_rest_xml()
+    response = create_ivr_example_redirect()
     return render_template('response_template.xml', response=response)
 
 
@@ -81,10 +114,16 @@ def rest_redirect_xml_response():
 def gather_digits():
     # Post params- Same params as rest_xml_response() with additional
     # 'Digit' = input digts from user
-    response = create_gather_digits()
+    if request.form:
+        dir(request.form)
+        print "DTMF = " + request.form['DIGIT']
+    response = create_ivr_gather_digits()
     return render_template('response_template.xml', response=response)
 
 
 
 if __name__ == '__main__':
-    response_server.run()
+    if not os.path.isfile("templates/response_template.xml"):
+        print "Error : Can't find the XML template : templates/response_template.xml"
+    else:
+        response_server.run(host='127.0.0.1', port=5000)
