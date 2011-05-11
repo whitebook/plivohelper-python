@@ -102,20 +102,32 @@ class REST:
         return self._urllib2_fetch(uri, vars, method)
 
     def call(self, call_params):
-        """
-        Call Helper
+        """Call Helper
         """
         path = '/v0.1/Calls/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def bulk_call(self, call_params):
-        """
-        Bulk Call Helper
+        """Bulk Call Helper
         """
         path = '/v0.1/BulkCalls/'
         method = 'POST'
         return self.request(path, method, call_params)
+
+    def modify_call(self, call_params):
+        """Modify Call Helper
+        """
+        path = '/v0.1/ModifyCall/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def hangup_all_calls(self):
+        """Hangup All Calls Helper
+        """
+        path = '/v0.1/HangupAll/'
+        method = 'GET'
+        return self.request(path, method)
 
 
 # RESTXML Response Helpers

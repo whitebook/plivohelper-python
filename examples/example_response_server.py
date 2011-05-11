@@ -14,8 +14,15 @@ def page_not_found(error):
 def create_rest_xml():
     r = plivohelper.Response()
     r.add_pause(length=3)
-    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
+    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=0)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
+    r.add_hangup()
+    return r
+
+def create_transfer_rest_xml():
+    r = plivohelper.Response()
+    r.add_pause(length=2)
+    r.add_say("This is a transferred call in between", loop=2)
     r.add_hangup()
     return r
 
@@ -34,8 +41,8 @@ def create_redirect_rest_xml():
 
 def create_gather_digits():
     r = plivohelper.Response()
-    r.add_pause(length=5)
-    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
+    r.add_pause(length=2)
+    r.add_say("Hi there. Can you hear me?", loop=2)
     r.add_hangup()
     return r
 
@@ -65,7 +72,7 @@ def rest_xml_response():
     #               If direction is outbound then 2 additional params:
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
-
+    print request.form['call_uuid']
     response = create_rest_xml()
     return render_template('response_template.xml', response=response)
 
@@ -74,6 +81,14 @@ def rest_xml_response():
 def rest_redirect_xml_response():
     # Post params- Same params as rest_xml_response()
     response = create_redirect_rest_xml()
+    return render_template('response_template.xml', response=response)
+
+
+
+@response_server.route('/transfered/', methods=['GET', 'POST'])
+def rest_transfer_xml_response():
+     # Post params- Same params as rest_xml_response()
+    response = create_transfer_rest_xml()
     return render_template('response_template.xml', response=response)
 
 
