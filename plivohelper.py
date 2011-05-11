@@ -260,9 +260,6 @@ class Say(Verb):
         Verb.__init__(self, voice=voice, language=language, loop=loop,
             **kwargs)
         self.body = text
-        if voice and (voice != self.MAN and voice != self.WOMAN):
-            raise RESTException( \
-                "Invalid Say voice parameter, must be 'man' or 'woman'")
         if language and (language != self.ENGLISH and language != self.SPANISH
             and language != self.FRENCH and language != self.GERMAN):
             raise RESTException( \
@@ -345,7 +342,7 @@ class Gather(Verb):
             **kwargs)
         if method and (method != self.GET and method != self.POST):
             raise RESTException("Invalid method parameter, must be 'GET' or 'POST'")
-        self.nestables = ['Say', 'Play']
+        self.nestables = ['Say', 'Play', 'Pause']
 
 
 class Number(Verb):
