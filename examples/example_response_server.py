@@ -26,6 +26,7 @@ def create_ivr_example():
     """Create a simple IVR which pause and play an audio"""
     r = plivohelper.Response()
     r.add_pause(length=3)
+    r.add_say("Hello and Welcome to our demo of Plivo", loop=2)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
     r.add_hangup()
@@ -35,7 +36,7 @@ def create_ivr_example():
 def create_ivr_example_redirect():
     """Create an IVR which will gather DTMF when calling an extra URL and play few audio files"""
     r = plivohelper.Response()
-    g = r.add_gather(numDigits=25, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
+    g = r.add_gather(numDigits=5, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=1)
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
     r.add_pause(length=5)
@@ -50,10 +51,15 @@ def create_ivr_gather_digits():
     r = plivohelper.Response()
     r.add_pause(length=5)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
-    #r.add_hangup()
     return r
 
-
+def create_ivr_say_thank_123():
+    """ Create an IVR"""
+    r = plivohelper.Response()
+    r.add_say("Hello and Welcome to our demo of Plivo", loop=2)
+    r.add_pause(length=3)
+    r.add_hangup()
+    return r
 
 # URLs Implementation
 
@@ -114,10 +120,11 @@ def rest_redirect_xml_response():
 def gather_digits():
     # Post params- Same params as rest_xml_response() with additional
     # 'Digit' = input digts from user
-    if request.form:
-        dir(request.form)
-        print "DTMF = " + request.form['DIGIT']
-    response = create_ivr_gather_digits()
+    print "DTMF = " + request.form['Digits']
+    if request.form['Digits']=='123':
+        response = create_ivr_gather_digits()
+    else:
+        response = create_ivr_gather_digits()
     return render_template('response_template.xml', response=response)
 
 
