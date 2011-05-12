@@ -6,7 +6,7 @@ response_server = Flask("ResponseServer")
 response_server.debug = True
 
 """
-This is a simple example which demonstrate how easy you can build a light HTTP 
+This is a simple example which demonstrate how easy you can build a light HTTP
 server using Flask which will return formatted XML to command the Plivo Server
 
 By default the HTTP Server will be listening on http://127.0.0.1:5000
@@ -26,9 +26,17 @@ def create_ivr_example():
     """Create a simple IVR which pause and play an audio"""
     r = plivohelper.Response()
     r.add_pause(length=3)
-    r.add_say("Hello and Welcome to our demo of Plivo", loop=2)
-    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
+    #r.add_say("$1000.200", loop=5, type='CURRENCY', method= 'PRONOUNCED')
+    r.add_say("Welcome to Freeswitch", loop=2, voice='pico', engine='tts_commandline')
+    #r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=0)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
+    r.add_hangup()
+    return r
+
+def create_transfer_rest_xml():
+    r = plivohelper.Response()
+    r.add_pause(length=2)
+    r.add_say("This is a transferred call in between", loop=2)
     r.add_hangup()
     return r
 
@@ -38,8 +46,12 @@ def create_ivr_example_redirect():
     r = plivohelper.Response()
     g = r.add_gather(numDigits=5, timeout=25, playBeep='true', action='http://127.0.0.1:5000/gather/dtmf/')
     g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=1)
-    g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=1)
-    r.add_pause(length=5)
+    g.add_pause(length=2)
+    g.add_say("Hi this is venky", loop=1, voice='slt')
+    g.add_say("Hi this is command line tts pico", loop=1, voice='pico', engine='tts_commandline')
+    g.add_say("$1000.200", loop=2, type='CURRENCY', method= 'PRONOUNCED')
+    g.add_pause(length=2)
+    g.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
     r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)
     r.add_record()
     r.add_hangup()
@@ -49,8 +61,9 @@ def create_ivr_example_redirect():
 def create_ivr_gather_digits():
     """ Create an IVR which on which we are gathering DTMF, see call in create_ivr_example_redirect"""
     r = plivohelper.Response()
-    r.add_pause(length=5)
-    r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-dude_you_suck.wav", loop=1)
+    r.add_pause(length=2)
+    r.add_say("Hi there. Can you hear me?", loop=2)
+    r.add_hangup()
     return r
 
 def create_ivr_say_thank_123():
@@ -68,7 +81,7 @@ def page_not_found(error):
     """This implemente an error page when page aren't found"""
     print "404 page not found"
     return 'This URL does not exist', 404
-    
+
 
 @response_server.route('/')
 def home():
@@ -105,6 +118,7 @@ def rest_xml_response():
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
 
+    print request.form['call_uuid']
     response = create_ivr_example()
     return render_template('response_template.xml', response=response)
 
@@ -113,6 +127,14 @@ def rest_xml_response():
 def rest_redirect_xml_response():
     # Post params- Same params as rest_xml_response()
     response = create_ivr_example_redirect()
+    return render_template('response_template.xml', response=response)
+
+
+
+@response_server.route('/transfered/', methods=['GET', 'POST'])
+def rest_transfer_xml_response():
+     # Post params- Same params as rest_xml_response()
+    response = create_transfer_rest_xml()
     return render_template('response_template.xml', response=response)
 
 

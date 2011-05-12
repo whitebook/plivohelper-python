@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import plivohelper
-
+from time import sleep
 
 #URL of the Rest Telefonie service
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken
-SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+SID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 
 #Define Channel Variable - http://wiki.freeswitch.org/wiki/Channel_Variables
@@ -29,8 +29,27 @@ call_params = {
     'RingUrl' : "http://127.0.0.1:5000/ringing/"
 }
 
+request_uuid = ""
+
 #Perform the Call on the Rest API
 try:
-    print plivo.call(call_params)
+    result = plivo.call(call_params)
+    request_uuid = result.split(':')[1]
 except Exception, e:
     print e
+
+print request_uuid
+
+if request_uuid:
+    sleep(10)
+    # Hangup a call using a HTTP POST
+    modify_call_params = {
+        'Status': 'completed', # Caller Id
+        'RequestUUID' : request_uuid.strip(), # Request UUID to hangup call
+    }
+
+    #Perform the Call on the Rest API
+    try:
+        print plivo.modify_call(modify_call_params)
+    except Exception, e:
+        print e
