@@ -6,6 +6,7 @@ import plivohelper
 # Using Say, Dial, and Play
 r = plivohelper.Response()
 r.append(plivohelper.Say("Hello World", voice=plivohelper.Say.WOMAN, language=plivohelper.Say.ENGLISH, loop=10))
+#r.append(plivohelper.Conference("myroom"))
 r.append(plivohelper.Dial("4155551212", time_limit=45))
 r.append(plivohelper.Play("http://www.mp3.com"))
 print r
