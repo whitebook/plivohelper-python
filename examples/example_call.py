@@ -27,7 +27,8 @@ call_params = {
     'AnswerUrl' : "http://127.0.0.1:5000/answered/",
     'HangUpUrl' : "http://127.0.0.1:5000/hangup/",
     'RingUrl' : "http://127.0.0.1:5000/ringing/",
-    'TimeLimit': "10"
+    'TimeLimit': "10",
+    'HangupOnRing': "1"
 }
 
 request_uuid = ""
