@@ -236,7 +236,7 @@ class Response(Verb):
     def __init__(self, version=None, **kwargs):
         Verb.__init__(self, version=version, **kwargs)
         self.nestables = ['Say', 'Play', 'Gather', 'Record', 'Dial',
-            'Redirect', 'Pause', 'Hangup', 'Reject', 'Sms']
+            'Redirect', 'Pause', 'Hangup', 'Reject', 'Sms', 'Conference']
 
 
 class Say(Verb):
