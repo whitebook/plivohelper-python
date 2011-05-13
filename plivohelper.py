@@ -228,6 +228,9 @@ class Verb:
     def add_recordsession(self, **kwargs):
         return self.append(RecordSession(**kwargs))
 
+    def add_schedulehangup(self, **kwargs):
+        return self.append(ScheduleHangup(**kwargs))
+
 
 class Response(Verb):
     """
@@ -236,7 +239,8 @@ class Response(Verb):
     def __init__(self, version=None, **kwargs):
         Verb.__init__(self, version=version, **kwargs)
         self.nestables = ['Say', 'Play', 'Gather', 'Record', 'Dial',
-            'Redirect', 'Pause', 'Hangup', 'Reject', 'Sms', 'Conference']
+            'Redirect', 'Pause', 'Hangup', 'Reject', 'Sms', 'RecordSession',
+            'ScheduleHangup']
 
 
 class Say(Verb):
@@ -319,6 +323,14 @@ class RecordSession(Verb):
     """
     def __init__(self, **kwargs):
         Verb.__init__(self)
+
+
+class ScheduleHangup(Verb):
+    """
+    Record the call session
+    """
+    def __init__(self, time=None, **kwargs):
+        Verb.__init__(self, time=time, **kwargs)
 
 
 class Gather(Verb):

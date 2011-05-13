@@ -26,7 +26,9 @@ call_params = {
     'OriginateDialString' : originate_dial_string,
     'AnswerUrl' : "http://127.0.0.1:5000/answered/",
     'HangUpUrl' : "http://127.0.0.1:5000/hangup/",
-    'RingUrl' : "http://127.0.0.1:5000/ringing/"
+    'RingUrl' : "http://127.0.0.1:5000/ringing/",
+    'TimeLimit': "10",
+    'HangupOnRing': "1"
 }
 
 request_uuid = ""
@@ -34,13 +36,13 @@ request_uuid = ""
 #Perform the Call on the Rest API
 try:
     result = plivo.call(call_params)
-    request_uuid = result.split(':')[1]
+    #request_uuid = result.split(':')[1]
 except Exception, e:
     print e
 
-print request_uuid
+print result
 
-if request_uuid:
+if False:
     sleep(10)
     # Hangup a call using a HTTP POST
     modify_call_params = {
