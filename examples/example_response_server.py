@@ -25,10 +25,11 @@ The following URLs are implemented:
 def create_ivr_example():
     """Create a simple IVR which pause and play an audio"""
     r = plivohelper.Response()
+    #r.add_schedulehangup(time=10)
     r.add_pause(length=3)
     #r.add_say("$1000.200", loop=5, type='CURRENCY', method= 'PRONOUNCED')
     r.add_say("Welcome to Freeswitch", loop=2, voice='pico', engine='tts_commandline')
-    #r.add_play("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-generic_greeting.wav", loop=0)
+    r.add_play("http://demo.twilio.com/hellomonkey/monkey.mp3", loop=2)
     r.add_redirect(url='http://127.0.0.1:5000/redirect/answered/')
     r.add_hangup()
     return r

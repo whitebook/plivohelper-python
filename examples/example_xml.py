@@ -22,6 +22,7 @@ print r
 r = plivohelper.Response()
 r.add_say("Hello World", voice=plivohelper.Say.WOMAN, language=plivohelper.Say.ENGLISH, loop=10)
 r.add_dial("4155551212", time_limit=45)
+r.add_schedulehangup(time=10)
 r.add_play("http://www.mp3.com")
 print r
 
