@@ -115,17 +115,38 @@ class REST:
         method = 'POST'
         return self.request(path, method, call_params)
 
-    def modify_call(self, call_params):
-        """Modify Call Helper
+    def transfer_call(self, call_params):
+        """Transfer Live Call Helper
         """
-        path = '/v0.1/ModifyCall/'
+        path = '/v0.1/TransferCall/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def hangup_call(self, call_params):
+        """Hangup Live Call Helper
+        """
+        path = '/v0.1/HangupCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def hangup_all_calls(self):
-        """Hangup All Calls Helper
+        """Hangup All Live Calls Helper
         """
-        path = '/v0.1/HangupAll/'
+        path = '/v0.1/HangupAllCalls/'
+        method = 'GET'
+        return self.request(path, method)
+
+    def schedule_hangup(self):
+        """Schedule Hangup Helper
+        """
+        path = '/v0.1/ScheduleHangup/'
+        method = 'GET'
+        return self.request(path, method)
+
+    def cancel_scheduled_hangup(self):
+        """Cancel a Scheduled Hangup Helper
+        """
+        path = '/v0.1/CancelScheduledHangup/'
         method = 'GET'
         return self.request(path, method)
 
@@ -321,8 +342,8 @@ class RecordSession(Verb):
     """
     Record the call session
     """
-    def __init__(self, **kwargs):
-        Verb.__init__(self)
+    def __init__(self, prefix=None, **kwargs):
+        Verb.__init__(self, prefix=None, **kwargs)
 
 
 class ScheduleHangup(Verb):
