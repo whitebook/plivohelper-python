@@ -292,7 +292,7 @@ class Response(Grammar):
         Grammar.__init__(self, version=version, **kwargs)
         self.nestables = ['Speak', 'Play', 'GetDigits', 'Record', 'Dial',
             'Redirect', 'Wait', 'Hangup', 'Reject', 'Sms', 'RecordSession',
-            'PreAnswer', 'ScheduleHangup']
+            'PreAnswer', 'ScheduleHangup', 'Conference']
 
 class Speak(Grammar):
     """Speak text
@@ -447,7 +447,7 @@ class Dial(Grammar):
 
     def __init__(self, number=None, action=None, method=None, **kwargs):
         Grammar.__init__(self, action=action, method=method, **kwargs)
-        self.nestables = ['Number', 'Conference']
+        self.nestables = ['Number']
         if number and len(number.split(',')) > 1:
             for n in number.split(','):
                 self.append(Number(n.strip()))
