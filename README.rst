@@ -6,20 +6,21 @@ Description
 ~~~~~~~~~~~
 
 The Plivo Python helper simplifies the process of making REST calls and generating RESTXML.
-See <http://www.plivo.org/documentation/> for more information on Plivo.
+
+See `Plivo Documentation <http://www.plivo.org/documentation/>`_ for more information.
 
 
 Installation
 ~~~~~~~~~~~~~
 
-**Run:**::
+**Run:**
     $ pip install plivohelper
 
 
 Manual Installation
 ~~~~~~~~~~~~~~~~~~~~
 
-**Download the source and run:**::
+**Download the source and run:**
     $ python setup.py install
 
 
@@ -30,27 +31,27 @@ As shown in example-call.py, you will need to specify the ACCOUNT_ID and ACCOUNT
 
 Before you run the examples, you should have Plivo Running along with FreeSWITCH Running and a user 1000 logged in.
 
-See <http://www.plivo.org/documentation/> for more information.
+See `Plivo Documentation <http://www.plivo.org/documentation/>`_ for more information.
 
 
 Files
 ~~~~~
 
-plivohelper.py: include this library in your code
-examples/example-call.py: example usage of REST Call
-examples/example-bulkcalls.py: example usage of REST Bulk Calls
-examples/example-transfercall.py: example usage of REST Transfer Live Call
-examples/example-hangupcall.py: example usage of REST Hangup Live Call
-examples/example-xml.py: example usage of the RESTXML generator
-examples/example-utils.py: example usage of utilities
+*plivohelper.py: include this library in your code
+*examples/example-call.py: example usage of REST Call
+*examples/example-bulkcalls.py: example usage of REST Bulk Calls
+*examples/example-transfercall.py: example usage of REST Transfer Live Call
+*examples/example-hangupcall.py: example usage of REST Hangup Live Call
+*examples/example-xml.py: example usage of the RESTXML generator
+*examples/example-utils.py: example usage of utilities
 
-examples/example-responseserver.py: example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_.)
+examples/example-responseserver.py: example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_)
 
 
 Credits
 -------
 
-Plivo Python Helper Library is derived from `Twilio Python Helper <https://github.com/twilio/twilio-python>`_.
+Plivo Python Helper Library is derived from `Twilio Python Helper <https://github.com/twilio/twilio-python>`_
 
 
 License
