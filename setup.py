@@ -7,7 +7,7 @@ setup(
     version = "0.1",
     description = "Plivo API client and RESTXML generator",
     author = "Plivo Team",
-    author_email = "contact@plivo.org",
+    author_email = "hello@plivo.org",
     url = "https://github.com/miglu/plivo-python-client",
     keywords = ["plivo","rest"],
     classifiers = [

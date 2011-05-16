@@ -1,42 +1,56 @@
 
-Plivo-REST-Helper
------------------
+Plivo Python Helper Library
+---------------------------
 
-This code is part of the Open Source Cloud Telephony Stack
-
-Overview
-~~~~~~~~
-
-REST Helper for [Plivo-REST](https://github.com/miglu/Plivo-REST/)
-
-    * Author: Venky (bevenky) <venky@miglu.com>
-
-
-
-Get Started
+Description
 ~~~~~~~~~~~
 
-Before you run the examples, you should have FreeSWITCH Running and a user 1000 logged in.
-
-**Run the following command to install the plivo-rest-helper :** ::
-
-    python setup.py install
+The Plivo Python helper simplifies the process of making REST calls and generating RESTXML.
+See <http://www.plivo.org/documentation/> for more information on Plivo.
 
 
-**Run REST Server :** ::
+Installation
+~~~~~~~~~~~~~
 
-    python src/rest_server.py
+**Run:**::
+    $ pip install plivohelper
 
 
-**Run Outbound Server :** ::
+Manual Installation
+~~~~~~~~~~~~~~~~~~~~
 
-    python src/outbound_server.py
+**Download the source and run:**::
+    $ python setup.py install
+
+
+Usage
+~~~~~
+To use the Plivo helper library, just 'import plivohelper' in the your current python file.
+As shown in example-call.py, you will need to specify the ACCOUNT_ID and ACCOUNT_TOKEN, before you can make REST requests.
+
+Before you run the examples, you should have Plivo Running along with FreeSWITCH Running and a user 1000 logged in.
+
+See <http://www.plivo.org/documentation/> for more information.
+
+
+Files
+~~~~~
+
+plivohelper.py: include this library in your code
+examples/example-call.py: example usage of REST Call
+examples/example-bulkcalls.py: example usage of REST Bulk Calls
+examples/example-transfercall.py: example usage of REST Transfer Live Call
+examples/example-hangupcall.py: example usage of REST Hangup Live Call
+examples/example-xml.py: example usage of the RESTXML generator
+examples/example-utils.py: example usage of utilities
+
+examples/example-responseserver.py: example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_.)
 
 
 Credits
 -------
 
-Plivo-REST-Helper is derived, and uses code from [Twilio Python Helper](https://github.com/twilio/twilio-python)
+Plivo Python Helper Library is derived from `Twilio Python Helper <https://github.com/twilio/twilio-python>`_.
 
 
 License

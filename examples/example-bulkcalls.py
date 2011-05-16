@@ -2,7 +2,7 @@
 import plivohelper
 
 
-#URL of the Rest Telefonie service
+#URL of the Plivo REST service
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken

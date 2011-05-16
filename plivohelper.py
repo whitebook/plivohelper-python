@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
-__VERSION__ = "0.10"
-
+__VERSION__ = "0.1"
 
 import urllib, urllib2, base64, hmac
 from hashlib import sha1
-from xml.sax.saxutils import escape, quoteattr
 from xml.dom.minidom import Document
 
+try:
+    from google.appengine.api import urlfetch
+    APPENGINE = True
+except:
+    APPENGINE = False
 
-class RESTException(Exception):
-    pass
 
+class PlivoException(Exception): pass
 
-# REST Helpers
+# Plivo REST Helpers
 # ===========================================================================
 
 class HTTPErrorProcessor(urllib2.HTTPErrorProcessor):
@@ -24,24 +26,28 @@ class HTTPErrorProcessor(urllib2.HTTPErrorProcessor):
                 'http', request, response, code, msg, hdrs)
         return response
 
+class HTTPErrorAppEngine(Exception): pass
 
-class RESTUrlRequest(urllib2.Request):
+class PlivoUrlRequest(urllib2.Request):
     def get_method(self):
         if getattr(self, 'http_method', None):
             return self.http_method
         return urllib2.Request.get_method(self)
 
-
 class REST:
-    """
-    Provides helper functions for making REST requests to the REST API.
+    """Plivo helper class for making
+    REST requests to the Plivo API.  This helper library works both in
+    standalone python applications using the urllib/urlib2 libraries and
+    inside Google App Engine applications using urlfetch.
     """
     def __init__(self, url, id, token):
-        """
-        initialize an account object
+        """initialize a object
+
         url: Rest API Url
-        id: SID/ID
-        token: Account token
+        id: Plivo SID/ID
+        token: Plivo token
+
+        returns a Plivo object
         """
         self.url = url
         self.id = id
@@ -66,9 +72,9 @@ class REST:
 
         if method and method == 'GET':
             uri = self._build_get_uri(uri, params)
-            req = RESTUrlRequest(uri)
+            req = PlivoUrlRequest(uri)
         else:
-            req = RESTUrlRequest(uri, urllib.urlencode(params))
+            req = PlivoUrlRequest(uri, urllib.urlencode(params))
             if method and (method == 'DELETE' or method == 'PUT'):
                 req.http_method = method
 
@@ -79,14 +85,35 @@ class REST:
         response = urllib2.urlopen(req)
         return response.read()
 
+    def _appengine_fetch(self, uri, params, method):
+        if method == 'GET':
+            uri = self._build_get_uri(uri, params)
+
+        try:
+            httpmethod = getattr(urlfetch, method)
+        except AttributeError:
+            raise NotImplementedError(
+                "Google App Engine does not support method '%s'" % method)
+
+        authstring = base64.encodestring('%s:%s' % (self.id, self.token))
+        authstring = authstring.replace('\n', '')
+        r = urlfetch.fetch(url=uri, payload=urllib.urlencode(params),
+            method=httpmethod,
+            headers={'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic %s' % authstring})
+        if r.status_code >= 300:
+            raise HTTPErrorAppEngine("HTTP %s: %s" % \
+                (r.status_code, r.content))
+        return r.content
+
     def request(self, path, method=None, vars={}):
-        """sends a request and gets a response from the REST API
+        """sends a request and gets a response from the Plivo REST API
 
         path: the URL (relative to the endpoint URL, after the /v1
         url: the HTTP method to use, defaults to POST
         vars: for POST or PUT, a dict of data to send
 
-        returns response in XML or raises an exception on error
+        returns Plivo response in XML or raises an exception on error
         """
         if not path or len(path) < 1:
             raise ValueError('Invalid path parameter')
@@ -99,6 +126,8 @@ class REST:
         else:
             uri = self.url + '/' + path
 
+        if APPENGINE:
+            return self._appengine_fetch(uri, vars, method)
         return self._urllib2_fetch(uri, vars, method)
 
     def call(self, call_params):
@@ -136,187 +165,178 @@ class REST:
         method = 'GET'
         return self.request(path, method)
 
-    def schedule_hangup(self):
+    def schedule_hangup(self, call_params):
         """Schedule Hangup Helper
         """
         path = '/v0.1/ScheduleHangup/'
         method = 'GET'
-        return self.request(path, method)
+        return self.request(path, method, call_params)
 
-    def cancel_scheduled_hangup(self):
+    def cancel_scheduled_hangup(self, call_params):
         """Cancel a Scheduled Hangup Helper
         """
         path = '/v0.1/CancelScheduledHangup/'
         method = 'GET'
-        return self.request(path, method)
+        return self.request(path, method, call_params)
 
 
 # RESTXML Response Helpers
 # ===========================================================================
 
-
-class Verb:
-    """
-    Basic verb object.
+class Grammar:
+    """Plivo basic grammar object.
     """
     def __init__(self, **kwargs):
         self.name = self.__class__.__name__
         self.body = None
         self.nestables = None
 
-        self.verbs = []
+        self.grammar = []
         self.attrs = {}
         for k, v in kwargs.items():
-            if k == "sender":
-                k = "from"
-            if v != None:
-                self.attrs[k] = unicode(v)
+            if k == "sender": k = "from"
+            if v != None: self.attrs[k] = unicode(v)
 
     def __repr__(self):
         """
-        String representation of an verb
+        String representation of a grammar
         """
         doc = Document()
         return self._xml(doc).toxml()
 
     def _xml(self, root):
         """
-        Return an XML element representing this verb
+        Return an XML element representing this grammar
         """
-        verb = root.createElement(self.name)
+        grammar = root.createElement(self.name)
 
         # Add attributes
         keys = self.attrs.keys()
         keys.sort()
         for a in keys:
-            verb.setAttribute(a, self.attrs[a])
+            grammar.setAttribute(a, self.attrs[a])
 
         if self.body:
             text = root.createTextNode(self.body)
-            verb.appendChild(text)
+            grammar.appendChild(text)
 
-        for c in self.verbs:
-            verb.appendChild(c._xml(root))
+        for c in self.grammar:
+            grammar.appendChild(c._xml(root))
 
-        return verb
+        return grammar
 
 
-    def append(self, verb):
+    def append(self, grammar):
         if not self.nestables:
-            raise RESTException("%s is not nestable" % self.name)
-        if verb.name not in self.nestables:
-            raise RESTException("%s is not nestable inside %s" % \
-                (verb.name, self.name))
-        self.verbs.append(verb)
-        return verb
+            raise PlivoException("%s is not nestable" % self.name)
+        if grammar.name not in self.nestables:
+            raise PlivoException("%s is not nestable inside %s" % \
+                (grammar.name, self.name))
+        self.grammar.append(grammar)
+        return grammar
 
-    def as_url(self):
+    def asUrl(self):
         return urllib.quote(str(self))
 
-    def add_say(self, text, **kwargs):
-        return self.append(Say(text, **kwargs))
+    def addSpeak(self, text, **kwargs):
+        return self.append(Speak(text, **kwargs))
 
-    def add_play(self, url, **kwargs):
+    def addPlay(self, url, **kwargs):
         return self.append(Play(url, **kwargs))
 
-    def add_pause(self, **kwargs):
-        return self.append(Pause(**kwargs))
+    def addWait(self, **kwargs):
+        return self.append(Wait(**kwargs))
 
-    def add_redirect(self, url=None, **kwargs):
+    def addRedirect(self, url=None, **kwargs):
         return self.append(Redirect(url, **kwargs))
 
-    def add_hangup(self, **kwargs):
+    def addHangup(self, **kwargs):
         return self.append(Hangup(**kwargs))
 
-    def add_reject(self, **kwargs):
+    def addReject(self, **kwargs):
         return self.append(Reject(**kwargs))
 
-    def add_gather(self, **kwargs):
-        return self.append(Gather(**kwargs))
+    def addGetDigits(self, **kwargs):
+        return self.append(GetDigits(**kwargs))
 
-    def add_number(self, number, **kwargs):
+    def addNumber(self, number, **kwargs):
         return self.append(Number(number, **kwargs))
 
-    def add_dial(self, number=None, **kwargs):
+    def addDial(self, number=None, **kwargs):
         return self.append(Dial(number, **kwargs))
 
-    def add_record(self, **kwargs):
+    def addRecord(self, **kwargs):
         return self.append(Record(**kwargs))
 
-    def add_conference(self, name, **kwargs):
+    def addConference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def add_recordsession(self, **kwargs):
+    def addSms(self, msg, **kwargs):
+        return self.append(Sms(msg, **kwargs))
+
+    def addRecordSession(self, **kwargs):
         return self.append(RecordSession(**kwargs))
 
-    def add_schedulehangup(self, **kwargs):
+    def addPreAnswer(self, **kwargs):
+        return self.append(PreAnswer(**kwargs))
+
+    def addScheduleHangup(self, **kwargs):
         return self.append(ScheduleHangup(**kwargs))
 
+class Response(Grammar):
+    """Plivo response object.
 
-class Response(Verb):
-    """
-    REST response object.
+    version: Plivo API version 0.1
     """
     def __init__(self, version=None, **kwargs):
-        Verb.__init__(self, version=version, **kwargs)
-        self.nestables = ['Say', 'Play', 'Gather', 'Record', 'Dial',
-            'Redirect', 'Pause', 'Hangup', 'Reject', 'Sms', 'RecordSession',
-            'ScheduleHangup']
+        Grammar.__init__(self, version=version, **kwargs)
+        self.nestables = ['Speak', 'Play', 'GetDigits', 'Record', 'Dial',
+            'Redirect', 'Wait', 'Hangup', 'Reject', 'Sms', 'RecordSession',
+            'PreAnswer', 'ScheduleHangup']
 
-
-class Say(Verb):
-    """
-    Say text
+class Speak(Grammar):
+    """Speak text
 
     text: text to say
-    voice: MAN or WOMAN
+    voice: voice to be used based on TTS engine
     language: language to use
     loop: number of times to say this text
     """
-    MAN = 'man'
-    WOMAN = 'woman'
-
     ENGLISH = 'en'
     SPANISH = 'es'
     FRENCH = 'fr'
     GERMAN = 'de'
 
     def __init__(self, text, voice=None, language=None, loop=None, **kwargs):
-        Verb.__init__(self, voice=voice, language=language, loop=loop,
+        Grammar.__init__(self, voice=voice, language=language, loop=loop,
             **kwargs)
         self.body = text
         if language and (language != self.ENGLISH and language != self.SPANISH
             and language != self.FRENCH and language != self.GERMAN):
-            raise RESTException( \
+            raise PlivoException( \
                 "Invalid Say language parameter, must be " + \
                 "'en', 'es', 'fr', or 'de'")
 
-
-class Play(Verb):
-    """
-    Play audio file at a URL
+class Play(Grammar):
+    """Play audio file at a URL
 
     url: url of audio file, MIME type on file must be set correctly
     loop: number of time to say this text
     """
     def __init__(self, url, loop=None, **kwargs):
-        Verb.__init__(self, loop=loop, **kwargs)
+        Grammar.__init__(self, loop=loop, **kwargs)
         self.body = url
 
+class Wait(Grammar):
+    """Wait for some time to further process the call
 
-class Pause(Verb):
-    """
-    Pause the call
-
-    length: length of pause in seconds
+    length: length of wait time in seconds
     """
     def __init__(self, length=None, **kwargs):
-        Verb.__init__(self, length=length, **kwargs)
+        Grammar.__init__(self, length=length, **kwargs)
 
-
-class Redirect(Verb):
-    """
-    Redirect call flow to another URL
+class Redirect(Grammar):
+    """Redirect call flow to another URL
 
     url: redirect url
     """
@@ -324,102 +344,100 @@ class Redirect(Verb):
     POST = 'POST'
 
     def __init__(self, url=None, method=None, **kwargs):
-        Verb.__init__(self, method=method, **kwargs)
+        Grammar.__init__(self, method=method, **kwargs)
         if method and (method != self.GET and method != self.POST):
-            raise RESTException("Invalid method parameter, must be 'GET' or 'POST'")
+            raise PlivoException( \
+                "Invalid method parameter, must be 'GET' or 'POST'")
         self.body = url
 
-
-class Hangup(Verb):
-    """
-    Hangup the call
+class Hangup(Grammar):
+    """Hangup the call
     """
     def __init__(self, **kwargs):
-        Verb.__init__(self)
+        Grammar.__init__(self)
 
-
-class RecordSession(Verb):
-    """
-    Record the call session
-    """
-    def __init__(self, prefix=None, **kwargs):
-        Verb.__init__(self, prefix=None, **kwargs)
-
-
-class ScheduleHangup(Verb):
-    """
-    Record the call session
-    """
-    def __init__(self, time=None, **kwargs):
-        Verb.__init__(self, time=time, **kwargs)
-
-
-class Gather(Verb):
-    """
-    Gather digits from the caller's keypad
+class GetDigits(Grammar):
+    """Get digits from the caller's keypad
 
     action: URL to which the digits entered will be sent
     method: submit to 'action' url using GET or POST
-    num_digits: how many digits to gather before returning
+    numDigits: how many digits to gather before returning
     timeout: wait for this many seconds before returning
-    finish_on_key: key that triggers the end of caller input
+    finishOnKey: key that triggers the end of caller input
     """
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, action=None, method=None, num_digits=None, timeout=None,
-        finish_on_key=None, **kwargs):
+    def __init__(self, action=None, method=None, numDigits=None, timeout=None,
+        finishOnKey=None, **kwargs):
 
-        Verb.__init__(self, action=action, method=method,
-            num_digits=num_digits, timeout=timeout, finish_on_key=finish_on_key,
+        Grammar.__init__(self, action=action, method=method,
+            numDigits=numDigits, timeout=timeout, finishOnKey=finishOnKey,
             **kwargs)
         if method and (method != self.GET and method != self.POST):
-            raise RESTException("Invalid method parameter, must be 'GET' or 'POST'")
-        self.nestables = ['Say', 'Play', 'Pause']
+            raise PlivoException( \
+                "Invalid method parameter, must be 'GET' or 'POST'")
+        self.nestables = ['Speak', 'Play', 'Wait']
 
-
-class Number(Verb):
-    """
-    Specify phone number in a nested Dial element.
+class Number(Grammar):
+    """Specify phone number in a nested Dial element.
 
     number: phone number to dial
-    send_digits: key to press after connecting to the number
+    sendDigits: key to press after connecting to the number
     """
-    def __init__(self, number, send_digits=None, **kwargs):
-        Verb.__init__(self, send_digits=send_digits, **kwargs)
+    def __init__(self, number, sendDigits=None, **kwargs):
+        Grammar.__init__(self, sendDigits=sendDigits, **kwargs)
         self.body = number
 
+class Sms(Grammar):
+    """ Send a Sms Message to a phone number
 
-class Conference(Verb):
+    to: whom to send message to, defaults based on the direction of the call
+    sender: whom to send message from.
+    action: url to request after the message is queued
+    method: submit to 'action' url using GET or POST
+    statusCallback: url to hit when the message is actually sent
     """
-    Specify conference in a nested Dial element.
+    GET = 'GET'
+    POST = 'POST'
+
+    def __init__(self, msg, to=None, sender=None, method=None, action=None,
+        statusCallback=None, **kwargs):
+        Grammar.__init__(self, action=action, method=method, to=to, sender=sender,
+            statusCallback=statusCallback, **kwargs)
+        if method and (method != self.GET and method != self.POST):
+            raise PlivoException( \
+                "Invalid method parameter, must be GET or POST")
+        self.body = msg
+
+class Conference(Grammar):
+    """Specify conference in a nested Dial element.
 
     name: friendly name of conference
     muted: keep this participant muted (bool)
     beep: play a beep when this participant enters/leaves (bool)
-    start_conference_on_enter: start conf when this participants joins (bool)
-    end_conference_on_exit: end conf when this participants leaves (bool)
-    wait_url: TwiML url that executes before conference starts
-    wait_method: HTTP method for wait_url GET/POST
+    startConferenceOnEnter: start conf when this participants joins (bool)
+    endConferenceOnExit: end conf when this participants leaves (bool)
+    waitUrl: TwiML url that executes before conference starts
+    waitMethod: HTTP method for waitUrl GET/POST
     """
     GET = 'GET'
     POST = 'POST'
 
     def __init__(self, name, muted=None, beep=None,
-        start_conference_on_enter=None, end_conference_on_exit=None, wait_url=None,
-        wait_method=None, **kwargs):
-        Verb.__init__(self, muted=muted, beep=beep,
-            start_conference_on_enter=start_conference_on_enter,
-            end_conference_on_exit=end_conference_on_exit, wait_url=wait_url,
-            wait_method=wait_method, **kwargs)
-        if wait_method and (wait_method != self.GET and wait_method != self.POST):
-            raise RESTException("Invalid wait_method parameter, must be GET or POST")
+        startConferenceOnEnter=None, endConferenceOnExit=None, waitUrl=None,
+        waitMethod=None, **kwargs):
+        Grammar.__init__(self, muted=muted, beep=beep,
+            startConferenceOnEnter=startConferenceOnEnter,
+            endConferenceOnExit=endConferenceOnExit, waitUrl=waitUrl,
+            waitMethod=waitMethod, **kwargs)
+        if waitMethod and (waitMethod != self.GET and waitMethod != self.POST):
+            raise PlivoException( \
+                "Invalid waitMethod parameter, must be GET or POST")
         self.body = name
 
-
-class Dial(Verb):
-    """
-    Dial another phone number and connect it to this call
+class Dial(Grammar):
+    """Dial another phone number and connect it to this call
 
     action: submit the result of the dial to this URL
     method: submit to 'action' url using GET or POST
@@ -428,7 +446,7 @@ class Dial(Verb):
     POST = 'POST'
 
     def __init__(self, number=None, action=None, method=None, **kwargs):
-        Verb.__init__(self, action=action, method=method, **kwargs)
+        Grammar.__init__(self, action=action, method=method, **kwargs)
         self.nestables = ['Number', 'Conference']
         if number and len(number.split(',')) > 1:
             for n in number.split(','):
@@ -436,32 +454,30 @@ class Dial(Verb):
         else:
             self.body = number
         if method and (method != self.GET and method != self.POST):
-            raise RESTException("Invalid method parameter, must be GET or POST")
+            raise PlivoException( \
+                "Invalid method parameter, must be GET or POST")
 
-
-class Record(Verb):
-    """
-    Record audio from caller
+class Record(Grammar):
+    """Record audio from caller
 
     action: submit the result of the dial to this URL
     method: submit to 'action' url using GET or POST
-    max_length: maximum number of seconds to record
+    maxLength: maximum number of seconds to record
     timeout: seconds of silence before considering the recording complete
     """
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, action=None, method=None, max_length=None,
+    def __init__(self, action=None, method=None, maxLength=None,
                  timeout=None, **kwargs):
-        Verb.__init__(self, action=action, method=method, max_length=max_length,
+        Grammar.__init__(self, action=action, method=method, maxLength=maxLength,
             timeout=timeout, **kwargs)
         if method and (method != self.GET and method != self.POST):
-            raise RESTException("Invalid method parameter, must be GET or POST")
+            raise PlivoException( \
+                "Invalid method parameter, must be GET or POST")
 
-
-class Reject(Verb):
-    """
-    Reject an incoming call
+class Reject(Grammar):
+    """Reject an incoming call
 
     reason: message to play when rejecting a call
     """
@@ -469,43 +485,62 @@ class Reject(Verb):
     BUSY = 'busy'
 
     def __init__(self, reason=None, **kwargs):
-        Verb.__init__(self, reason=reason, **kwargs)
+        Grammar.__init__(self, reason=reason, **kwargs)
         if reason and (reason != self.REJECTED and reason != self.BUSY):
-            raise RESTException("Invalid reason parameter, must be BUSY or REJECTED")
+            raise PlivoException( \
+                "Invalid reason parameter, must be BUSY or REJECTED")
+
+class RecordSession(Grammar):
+    """Record the call session
+    """
+    def __init__(self, prefix=None, **kwargs):
+        Grammar.__init__(self, prefix=None, **kwargs)
+
+class ScheduleHangup(Grammar):
+    """Schedule Hangup of call after a certain time
+    """
+    def __init__(self, time=None, **kwargs):
+        Grammar.__init__(self, time=time, **kwargs)
+
+class PreAsnwer(Grammar):
+    """Answer the call in Early Media Mode and execute nested grammar
+    """
+    def __init__(self, time=None, **kwargs):
+        Grammar.__init__(self, time=time, **kwargs)
+        self.nestables = ['Play', 'Speak', 'GetDigits']
 
 
-# Utility function and Request Validation
+# Plivo Utility function and Request Validation
 # ===========================================================================
 
 class Utils:
     def __init__(self, id, token):
-        """initialize an utility object
+        """initialize a plivo utility object
 
-        id: Account ID
-        token: Auth token
+        id: Plivo account SID/ID
+        token: Plivo account token
 
-        returns a util object
+        returns a Plivo util object
         """
         self.id = id
         self.token = token
 
-    def validate_request(self, uri, post_var, expected_signature):
-        """validate a request from server
+    def validateRequest(self, uri, postVars, expectedSignature):
+        """validate a request from plivo
 
-        uri: the full URI that RESTServer requested on your server
-        post_var: post vars that RESTServer sent with the request
-        expected_signature: signature in HTTP X-REST-Signature header
+        uri: the full URI that Plivo requested on your server
+        postVars: post vars that Plivo sent with the request
+        expectedSignature: signature in HTTP X-Plivo-Signature header
 
         returns true if the request passes validation, false if not
         """
 
         # append the POST variables sorted by key to the uri
         s = uri
-        if len(post_var) > 0:
-            for k, v in sorted(post_var.items()):
+        if len(postVars) > 0:
+            for k, v in sorted(postVars.items()):
                 s += k + v
 
         # compute signature and compare signatures
-        digest = hmac.new(self.token, s, sha1).digest()
-        encoded_str = base64.encodestring(digest).strip()
-        return ( encoded_str == expected_signature)
+        return (base64.encodestring(hmac.new(self.token, s, sha1).digest()).\
+            strip() == expectedSignature)
