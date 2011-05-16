@@ -37,15 +37,21 @@ See `Plivo Documentation <http://www.plivo.org/documentation/>`_ for more inform
 Files
 ~~~~~
 
-*plivohelper.py: include this library in your code
-*examples/example-call.py: example usage of REST Call
-*examples/example-bulkcalls.py: example usage of REST Bulk Calls
-*examples/example-transfercall.py: example usage of REST Transfer Live Call
-*examples/example-hangupcall.py: example usage of REST Hangup Live Call
-*examples/example-xml.py: example usage of the RESTXML generator
-*examples/example-utils.py: example usage of utilities
+**plivohelper.py:** include this library in your code
 
-examples/example-responseserver.py: example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_)
+**examples/example-call.py:** example usage of REST Call
+
+**examples/example-bulkcalls.py:** example usage of REST Bulk Calls
+
+**examples/example-transfercall.py:** example usage of REST Transfer Live Call
+
+**examples/example-hangupcall.py:** example usage of REST Hangup Live Call
+
+**examples/example-xml.py:** example usage of the RESTXML generator
+
+**examples/example-utils.py:** example usage of utilities
+
+**examples/example-responseserver.py:** example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_)
 
 
 Credits
