@@ -104,7 +104,7 @@ class REST:
     def call(self, call_params):
         """Call Helper
         """
-        path = '/v0.1/Calls/'
+        path = '/v0.1/Call/'
         method = 'POST'
         return self.request(path, method, call_params)
 
