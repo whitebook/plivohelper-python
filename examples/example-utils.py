@@ -14,7 +14,7 @@ utils = plivohelper.Utils(ACCOUNT_SID, ACCOUNT_TOKEN)
 
 # the URL and POST parameters would normally be provided by the web framework
 url = "http://UUUUUUUUUUUUUUUUUU"
-post_vars = {}
+postVars = {}
 
 # the request from Server also includes the HTTP header: X-REST-Signature
 # containing the expected signature
@@ -22,7 +22,7 @@ signature = "SSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 
 print "The request from Server to %s with the POST parameters %s " % (url, post_vars)
 
-if utils.validate_request(url, post_vars, signature):
+if utils.validateRequest(url, postVars, signature):
     print "was confirmed to have come from Server."
 else:
     print "was NOT VALID.  It might have been spoofed!"
