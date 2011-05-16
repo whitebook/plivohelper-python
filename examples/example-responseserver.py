@@ -117,9 +117,14 @@ def rest_xml_response():
     #               If direction is outbound then 2 additional params:
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
-
     print request.form['call_uuid']
-    response = create_ivr_example()
+    signature = request.headers['X-Plivo-Signature']
+    utils = plivohelper.Utils('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+                                'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
+    if utils.validateRequest(request.base_url, request.form, signature):
+        response = create_ivr_example()
+    else:
+        response = ""
     return render_template('response_template.xml', response=response)
 
 
