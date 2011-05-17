@@ -507,7 +507,7 @@ class PreAnswer(Grammar):
     """
     def __init__(self, time=None, **kwargs):
         Grammar.__init__(self, time=time, **kwargs)
-        self.nestables = ['Play', 'Speak', 'GetDigits']
+        self.nestables = ['Play', 'Speak', 'GetDigits', 'Wait']
 
 
 # Plivo Utility function and Request Validation

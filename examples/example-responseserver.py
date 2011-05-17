@@ -118,7 +118,7 @@ def rest_xml_response():
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
     print request.form['call_uuid']
-    signature = request.headers['X-Plivo-Signature']
+    signature = request.headers['HTTP_X_PLIVO_SIGNATURE']
     utils = plivohelper.Utils('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
                                 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
     if utils.validateRequest(request.base_url, request.form, signature):
