@@ -2,7 +2,7 @@
 import plivohelper
 from time import sleep
 
-#URL of the Rest Telefonie service
+#URL of the Plivo REST service
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken
@@ -27,8 +27,6 @@ call_params = {
     'AnswerUrl' : "http://127.0.0.1:5000/answered/",
     'HangUpUrl' : "http://127.0.0.1:5000/hangup/",
     'RingUrl' : "http://127.0.0.1:5000/ringing/",
-    'TimeLimit': "10",
-    'HangupOnRing': "1"
 }
 
 request_uuid = ""
@@ -45,13 +43,12 @@ print result
 if False:
     sleep(10)
     # Hangup a call using a HTTP POST
-    modify_call_params = {
-        'Status': 'completed', # Caller Id
+    hangup_call_params = {
         'RequestUUID' : request_uuid.strip(), # Request UUID to hangup call
     }
 
     #Perform the Call on the Rest API
     try:
-        print plivo.modify_call(modify_call_params)
+        print plivo.hangup_call(hangup_call_params)
     except Exception, e:
         print e

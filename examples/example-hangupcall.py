@@ -2,7 +2,7 @@
 import plivohelper
 
 
-#URL of the Plivo
+#URL of the Plivo REST Service
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken
@@ -13,13 +13,12 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN)
 
 # Hangup a call using a HTTP POST
-modify_call_params = {
-    'URL' : "http://127.0.0.1:5000/transfered/",
+hangup_call_params = {
     'CallUUID' : 'edaa59e1-79e0-41de-b016-f7a7570f6e9c', # Request UUID to hangup call
 }
 
-#Perform the Call on the Rest API
+#Perform a hangup on a Call
 try:
-    print plivo.modify_call(modify_call_params)
+    print plivo.hangup_call(hangup_call_params)
 except Exception, e:
     print e
