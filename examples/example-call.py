@@ -34,7 +34,6 @@ request_uuid = ""
 #Perform the Call on the Rest API
 try:
     result = plivo.call(call_params)
-    #request_uuid = result.split(':')[1]
 except Exception, e:
     print e
 

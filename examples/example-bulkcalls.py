@@ -29,8 +29,8 @@ call_params = {
     'AnswerUrl' : "http://127.0.0.1:5000/answered/",
     'HangUpUrl' : "http://127.0.0.1:5000/hangup/",
     'RingUrl' : "http://127.0.0.1:5000/ringing/",
-    'TimeLimit' : '10>30',
-    'HangupOnRing': "0>0",
+#    'TimeLimit' : '10>30',
+#    'HangupOnRing': "0>0",
 }
 
 try:
