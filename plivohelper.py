@@ -110,7 +110,7 @@ class REST:
         """sends a request and gets a response from the Plivo REST API
 
         path: the URL (relative to the endpoint URL, after the /v1
-        url: the HTTP method to use, defaults to POST
+        method: the HTTP method to use, defaults to POST
         vars: for POST or PUT, a dict of data to send
 
         returns Plivo response in XML or raises an exception on error
@@ -131,49 +131,49 @@ class REST:
         return self._urllib2_fetch(uri, vars, method)
 
     def call(self, call_params):
-        """Call Helper
+        """REST Call Helper
         """
         path = '/v0.1/Call/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def bulk_call(self, call_params):
-        """Bulk Call Helper
+        """REST Bulk Call Helper
         """
         path = '/v0.1/BulkCalls/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def transfer_call(self, call_params):
-        """Transfer Live Call Helper
+        """REST Transfer Live Call Helper
         """
         path = '/v0.1/TransferCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def hangup_call(self, call_params):
-        """Hangup Live Call Helper
+        """REST Hangup Live Call Helper
         """
         path = '/v0.1/HangupCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def hangup_all_calls(self):
-        """Hangup All Live Calls Helper
+        """REST Hangup All Live Calls Helper
         """
         path = '/v0.1/HangupAllCalls/'
         method = 'GET'
         return self.request(path, method)
 
     def schedule_hangup(self, call_params):
-        """Schedule Hangup Helper
+        """REST Schedule Hangup Helper
         """
         path = '/v0.1/ScheduleHangup/'
         method = 'GET'
         return self.request(path, method, call_params)
 
     def cancel_scheduled_hangup(self, call_params):
-        """Cancel a Scheduled Hangup Helper
+        """REST Cancel a Scheduled Hangup Helper
         """
         path = '/v0.1/CancelScheduledHangup/'
         method = 'GET'
@@ -502,7 +502,7 @@ class ScheduleHangup(Grammar):
     def __init__(self, time=None, **kwargs):
         Grammar.__init__(self, time=time, **kwargs)
 
-class PreAsnwer(Grammar):
+class PreAnswer(Grammar):
     """Answer the call in Early Media Mode and execute nested grammar
     """
     def __init__(self, time=None, **kwargs):

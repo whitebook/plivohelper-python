@@ -54,7 +54,7 @@ print r
 print "\n\n"
 
 # ===========================================================================
-# Using Gather, Redirect
+# Using GetDigits, Redirect
 r = plivohelper.Response()
 g = r.addGetDigits(numDigits=25, timeout=25, playBeep='true')
 g.addPlay("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-hello.wav", loop=2)

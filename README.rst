@@ -14,14 +14,14 @@ Installation
 ~~~~~~~~~~~~~
 
 **Run:**
-    $ pip install plivohelper
+    $ sudo pip install plivohelper
 
 
 Manual Installation
 ~~~~~~~~~~~~~~~~~~~~
 
 **Download the source and run:**
-    $ python setup.py install
+    $ sudo python setup.py install
 
 
 Usage
@@ -63,4 +63,4 @@ Plivo Python Helper Library is derived from `Twilio Python Helper <https://githu
 License
 -------
 
-The Plivo-REST-Helper Library is distributed under the MIT License
+The Plivo Python Helper Library  is distributed under the MIT License
