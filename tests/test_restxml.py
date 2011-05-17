@@ -300,19 +300,16 @@ class TestDial(PlivoTest):
     def testAddConference(self):
         """ add a conference to a dial"""
         r = plivohelper.Response()
-        d = plivohelper.Dial()
-        d.append(plivohelper.Conference("My Room"))
-        r.append(d)
+        r.append(plivohelper.Conference("My Room"))
         r = self.strip(r)
-        self.assertEquals(r, '<Response><Dial><Conference>My Room</Conference></Dial></Response>')
+        self.assertEquals(r, '<Response><Conference>My Room</Conference></Response>')
 
     def testAddConferenceConvenceMethod(self):
         """ add a conference to a dial, conviently"""
         r = plivohelper.Response()
-        d = r.addDial()
-        d.addConference("My Room")
+        r.addConference("My Room")
         r = self.strip(r)
-        self.assertEquals(r, '<Response><Dial><Conference>My Room</Conference></Dial></Response>')
+        self.assertEquals(r, '<Response><Conference>My Room</Conference></Response>')
 
     def testAddAttribute(self):
         """add attribute"""
