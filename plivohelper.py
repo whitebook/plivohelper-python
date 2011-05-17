@@ -169,14 +169,14 @@ class REST:
         """REST Schedule Hangup Helper
         """
         path = '/v0.1/ScheduleHangup/'
-        method = 'GET'
+        method = 'POST'
         return self.request(path, method, call_params)
 
     def cancel_scheduled_hangup(self, call_params):
         """REST Cancel a Scheduled Hangup Helper
         """
         path = '/v0.1/CancelScheduledHangup/'
-        method = 'GET'
+        method = 'POST'
         return self.request(path, method, call_params)
 
 
