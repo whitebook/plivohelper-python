@@ -24,7 +24,7 @@ The following URLs are implemented:
 
 def create_mainmenu():
     """Create the menu"""
-    print "Create main menu"
+    print ">>> Create main menu"
     r = plivohelper.Response()
     r.addSpeak("Welcome to Plivo demo, you are in main menu")
     r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
@@ -33,7 +33,7 @@ def create_mainmenu():
 def create_phonemenu(destination=None):
     """Create the menu"""
     r = plivohelper.Response()
-    print "Creating phonemenu ..."
+    print ">>> Creating phonemenu ..."
     print "Destination is %s" % str(destination)
 
     if destination == 'hours':
@@ -130,13 +130,15 @@ def gather_digits_phonemenu(destination='default'):
 
     # Get destination from url query string: 
     # if found overwrite current destination set
-    destination = request.args.get('destination', destination)
-    print "Found Destination %s" % str(destination)
 
     if request.method == 'POST':
+        destination = request.args.get('destination', destination)
+        print "Found Destination %s" % str(destination)
         print "Received params : %s" % str(request.form.items())
         dtmf = request.form.get('Digits', None)
     else:
+        destination = request.args.get('destination', destination)
+        print "Found Destination %s" % str(destination)
         print "Received params : %s" % str(request.args)
         dtmf = request.args.get('Digits', None)
 
@@ -144,16 +146,20 @@ def gather_digits_phonemenu(destination='default'):
         print "Received DTMF %s" % str(dtmf)
         if destination == 'default' and dtmf == '1':
             destination = 'hours'
-        if destination == 'default' and dtmf == '2':
+        elif destination == 'default' and dtmf == '2':
             destination = 'location'
-        if destination == 'default' and dtmf == '3':
+        elif destination == 'default' and dtmf == '3':
             destination = 'duck'
-        if destination == 'default' and dtmf == '0':
+        elif destination == 'default' and dtmf == '0':
             destination = 'receptionist'
-        if destination == 'location' and dtmf == '1':
+        elif destination == 'location' and dtmf == '1':
             destination = 'east-bay'
-        if destination == 'location' and dtmf == '2':
+        elif destination == 'location' and dtmf == '2':
             destination = 'san-jose'
+        else:
+            destination = 'default'
+
+    print "New Destination is %s" % str(destination)
 
     response = create_phonemenu(destination)
     print "RESTXML Response => %s" % response
