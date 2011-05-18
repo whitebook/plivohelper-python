@@ -42,39 +42,40 @@ def create_phonemenu(destination=None):
     r = plivohelper.Response()
     print ">>>> def create_phonemenu"
 
-    if destination=='hours':
+    if destination == 'hours':
         r.addSpeak("Initech is open Monday through Friday, 9am to 5pm")
         r.addSpeak("Saturday, 10am to 3pm and closed on Sundays")
 
-    elif destination=='location':
+    elif destination == 'location':
         g = r.addGetDigits(playBeep='true', action='http://127.0.0.1:5000/phonemenu/location')
         g.addSpeak("For directions from the East Bay, press 1")
         g.addSpeak("For directions from San Jose, press 2")
 
-    elif destination=='east-bay':
+    elif destination == 'east-bay':
         r.addSpeak("Take BART towards San Francisco / Milbrae. Get off on Powell Street. Walk a block down 4th street")
 
-    elif destination=='san-jose':
+    elif destination == 'san-jose':
         r.addSpeak("Take Cal Train to the Milbrae BART station. Take any Bart train to Powell Street")
 
-    elif destination=='duck':
+    elif destination == 'duck':
         r.addPlay("http://localhost/~areski/duck.mp3", loop=5)
 
-    elif destination=='receptionist':
+    elif destination == 'receptionist':
         r.addSpeak("Please wait while we connect you")
         #<Dial>NNNNNNNNNN</Dial>
 
     else:
         #default menu
-        g = r.addGetDigits(numDigits=1, timeout=5, playBeep='true', action='http://127.0.0.1:5000/phonemenu/default')
+        #g = r.addGetDigits(numDigits=1, timeout=5, playBeep='true', action='http://127.0.0.1:5000/phonemenu/default')
         #the follow example Fail
-        #g = r.addGetDigits(playBeep='true', action='http://127.0.0.1:5000/phonemenu/?node=default')
+        g = r.addGetDigits(playBeep='true', action='http://127.0.0.1:5000/phonemenu/?node=hours', method="GET")
         g.addSpeak("Hello and welcome to the Initech Phone Menu")
         g.addSpeak("For business hours, press 1")
         g.addSpeak("For directions, press 2")
         g.addSpeak("To hear a duck quack, press 3")
         g.addSpeak("To speak to a receptionist, press 0")
 
+    print repr(r)
     return r
 
 
@@ -150,28 +151,35 @@ def gather_digits_phonemenu(node='default'):
     # 'Digit' = input digts from user
     destination = None
     print "HERE"
+
+    # get node from url : if found overwrite current node set
+    node = request.args.get('node', node)
+
     print node
-    if node=='location':
-        destination='location'
+
+    if node == 'location':
+        destination = 'location'
     if request:
-        print dir(request.form)
+        print dir(request.form.items())
         if request.form and request.form['Digits']:
             dtmf = request.form['Digits']
             print "DTMF"
             print dtmf
 
-            if node=='default' and dtmf==1:
+            if node == 'default' and dtmf == '1':
                 destination = 'hours'
-            if node=='default' and dtmf==2:
+            if node == 'default' and dtmf == '2':
                 destination = 'location'
-            if node=='default' and dtmf==3:
+            if node == 'default' and dtmf == '3':
                 destination = 'duck'
-            if node=='default' and dtmf==0:
+            if node == 'default' and dtmf == '0':
                 destination = 'receptionist'
-            if node=='location' and dtmf==1:
+            if node == 'location' and dtmf == '1':
                 destination = 'east-bay'
-            if node=='location' and dtmf==2:
+            if node == 'location' and dtmf == '2':
                 destination = 'san-jose'
+    if node == 'hours':
+        destination = 'hours'
 
     response = create_phonemenu(destination)
     #response = create_mainmenu2()
