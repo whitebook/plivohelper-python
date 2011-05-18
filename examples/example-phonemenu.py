@@ -24,51 +24,46 @@ The following URLs are implemented:
 
 def create_mainmenu():
     """Create the menu"""
+    print "Create main menu"
     r = plivohelper.Response()
-    r.addSpeak("Main Menu")
-    r.addRedirect(url='http://127.0.0.1:5000/main2/')
+    r.addSpeak("Welcome to Plivo demo, you are in main menu")
+    r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
     return r
-
-def create_mainmenu2():
-    """Create the menu"""
-    r = plivohelper.Response()
-    r.addSpeak("Main Menu 2")
-    return r
-
 
 def create_phonemenu(destination=None):
     """Create the menu"""
-    print destination
     r = plivohelper.Response()
-    print ">>>> def create_phonemenu"
+    print "Creating phonemenu ..."
+    print "Destination is %s" % str(destination)
 
     if destination == 'hours':
         r.addSpeak("Initech is open Monday through Friday, 9am to 5pm")
         r.addSpeak("Saturday, 10am to 3pm and closed on Sundays")
-
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
     elif destination == 'location':
-        g = r.addGetDigits(playBeep='true', action='http://127.0.0.1:5000/phonemenu/location')
+        g = r.addGetDigits(numDigits=1, playBeep='true', action='http://127.0.0.1:5000/phonemenu/location')
         g.addSpeak("For directions from the East Bay, press 1")
         g.addSpeak("For directions from San Jose, press 2")
-
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
     elif destination == 'east-bay':
         r.addSpeak("Take BART towards San Francisco / Milbrae. Get off on Powell Street. Walk a block down 4th street")
-
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/exit')
     elif destination == 'san-jose':
         r.addSpeak("Take Cal Train to the Milbrae BART station. Take any Bart train to Powell Street")
-
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/exit')
     elif destination == 'duck':
-        r.addPlay("http://localhost/~areski/duck.mp3", loop=5)
-
+        r.addSpeak("Duck typing is so good in python", loop=1)
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/exit')
     elif destination == 'receptionist':
         r.addSpeak("Please wait while we connect you")
         #<Dial>NNNNNNNNNN</Dial>
-
+        r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
+    elif destination == 'exit':
+        r.addSpeak("Goodbye ! Thank you for testing Plivo")
+        r.addHangup()
     else:
         #default menu
-        #g = r.addGetDigits(numDigits=1, timeout=5, playBeep='true', action='http://127.0.0.1:5000/phonemenu/default')
-        #the follow example Fail
-        g = r.addGetDigits(playBeep='true', action='http://127.0.0.1:5000/phonemenu/?node=hours', method="GET")
+        g = r.addGetDigits(numDigits=1, playBeep='true', action='http://127.0.0.1:5000/phonemenu/', method="GET")
         g.addSpeak("Hello and welcome to the Initech Phone Menu")
         g.addSpeak("For business hours, press 1")
         g.addSpeak("For directions, press 2")
@@ -122,67 +117,46 @@ def rest_xml_response():
     #               'aleg_request_uuid': request id given at the time of api call
 
     if request.form:
-        print request.form['call_uuid']
+        print "CallUUID: %s" % request.form['call_uuid']
     response = create_mainmenu()
-    print response
-    #response = create_phonemenu()
-    return render_template('response_template.xml', response=response)
-
-@response_server.route('/main2/', methods=['GET', 'POST'])
-def rest_xml_response_main2():
-    # Post params- 'call_uuid': unique id of call, 'direction': direction of call,
-    #               'called_no': Number which was called, 'from_no': calling number,
-    #               If direction is outbound then 2 additional params:
-    #               'aleg_uuid': Unique Id for first leg,
-    #               'aleg_request_uuid': request id given at the time of api call
-
-    if request.form:
-        print request.form['call_uuid']
-    #response = create_mainmenu2()
-    response = create_phonemenu()
     print response
     return render_template('response_template.xml', response=response)
 
 @response_server.route('/phonemenu/', methods=['GET', 'POST'])
-@response_server.route('/phonemenu/<node>', methods=['GET', 'POST'])
-def gather_digits_phonemenu(node='default'):
+@response_server.route('/phonemenu/<destination>', methods=['GET', 'POST'])
+def gather_digits_phonemenu(destination='default'):
     # Post params- Same params as rest_xml_response() with additional
     # 'Digit' = input digts from user
-    destination = None
-    print "HERE"
 
-    # get node from url : if found overwrite current node set
-    node = request.args.get('node', node)
+    # Get destination from url query string: 
+    # if found overwrite current destination set
+    destination = request.args.get('destination', destination)
+    print "Found Destination %s" % str(destination)
 
-    print node
+    if request.method == 'POST':
+        print "Received params : %s" % str(request.form.items())
+        dtmf = request.form.get('Digits', None)
+    else:
+        print "Received params : %s" % str(request.args)
+        dtmf = request.args.get('Digits', None)
 
-    if node == 'location':
-        destination = 'location'
-    if request:
-        print dir(request.form.items())
-        if request.form and request.form['Digits']:
-            dtmf = request.form['Digits']
-            print "DTMF"
-            print dtmf
-
-            if node == 'default' and dtmf == '1':
-                destination = 'hours'
-            if node == 'default' and dtmf == '2':
-                destination = 'location'
-            if node == 'default' and dtmf == '3':
-                destination = 'duck'
-            if node == 'default' and dtmf == '0':
-                destination = 'receptionist'
-            if node == 'location' and dtmf == '1':
-                destination = 'east-bay'
-            if node == 'location' and dtmf == '2':
-                destination = 'san-jose'
-    if node == 'hours':
-        destination = 'hours'
+    if dtmf:
+        print "Received DTMF %s" % str(dtmf)
+        if destination == 'default' and dtmf == '1':
+            destination = 'hours'
+        if destination == 'default' and dtmf == '2':
+            destination = 'location'
+        if destination == 'default' and dtmf == '3':
+            destination = 'duck'
+        if destination == 'default' and dtmf == '0':
+            destination = 'receptionist'
+        if destination == 'location' and dtmf == '1':
+            destination = 'east-bay'
+        if destination == 'location' and dtmf == '2':
+            destination = 'san-jose'
 
     response = create_phonemenu(destination)
-    #response = create_mainmenu2()
-    print response
+    print "RESTXML Response => %s" % response
     return render_template('response_template.xml', response=response)
 
 
@@ -191,3 +165,4 @@ if __name__ == '__main__':
         print "Error : Can't find the XML template : templates/response_template.xml"
     else:
         response_server.run(host='127.0.0.1', port=5000)
+
