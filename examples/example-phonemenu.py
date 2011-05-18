@@ -101,11 +101,7 @@ def call_hangup():
     """Implement the hangup URL"""
     # Post params- 'request_uuid': request id given at the time of api call,
     #               'call_uuid': unique id of call, 'reason': reason of hangup
-    #request_uuid, call_uuid, reason
-    if request.form:
-        print "request_uuid = " + request.form['request_uuid']
-        print "call_uuid = " + request.form['call_uuid']
-        print "reason = " + request.form['reason']
+    print "We got a hangup notification"
     return "OK"
 
 @response_server.route('/answered/', methods=['GET', 'POST'])
