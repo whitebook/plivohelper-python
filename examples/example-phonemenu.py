@@ -75,7 +75,6 @@ def create_phonemenu(destination=None):
         g.addSpeak("To hear a duck quack, press 3")
         g.addSpeak("To speak to a receptionist, press 0")
 
-    print repr(r)
     return r
 
 
