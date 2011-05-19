@@ -9,7 +9,7 @@ an Telephony applications with Plivo
 FILES
 ~~~~~
 
-    * example_bulk_call.py :
+    * example_bulkcalls.py :
         Example to outbound several calls simultaneously
 
     * example_call.py :
