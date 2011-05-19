@@ -15,6 +15,10 @@ FILES
     * example_call.py :
 
         Example to outbound a single call
+        
+    * example-transfercall.py :
+    
+        Example of Call Transfer
 
     * example_response_server.py :
 
@@ -22,7 +26,11 @@ FILES
 
     * example_utils.py :
 
-        ...
+        example using plivohelper.Util
+        
+    * example-hangupcall.py :
+    
+        Example of Hangup call via Rest API
 
     * example_xml.py :
 
@@ -31,3 +39,8 @@ FILES
     * templates/response_template.xml :
 
         This is the XML template that is used to reply
+        
+    * example-phonemenu.py
+    
+        This is a simple phone menu application that demonstrate a simple
+        branching menu with options
