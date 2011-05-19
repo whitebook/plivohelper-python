@@ -163,7 +163,7 @@ class REST:
         """REST Hangup All Live Calls Helper
         """
         path = '/' + self.api_version + '/HangupAllCalls/'
-        method = 'GET'
+        method = 'POST'
         return self.request(path, method)
 
     def schedule_hangup(self, call_params):
@@ -194,9 +194,9 @@ class Grammar:
         self.grammar = []
         self.attrs = {}
         for k, v in kwargs.items():
-            if k == "sender": 
+            if k == "sender":
                 k = "from"
-            if v is not None: 
+            if v is not None:
                 self.attrs[k] = unicode(v)
 
     def __repr__(self):
@@ -365,12 +365,12 @@ class GetDigits(Grammar):
     timeout: wait for this many seconds before returning
     finishOnKey: key that triggers the end of caller input
     """
-    def __init__(self, action=None, method='POST', 
+    def __init__(self, action=None, method='POST',
                  numDigits=1, timeout=5,
                  finishOnKey=None, **kwargs):
 
         Grammar.__init__(self, action=action, method=method,
-                         numDigits=numDigits, timeout=timeout, 
+                         numDigits=numDigits, timeout=timeout,
                          finishOnKey=finishOnKey, **kwargs)
         Grammar.check_post_get_method(method)
         self.nestables = ['Speak', 'Play', 'Wait']
@@ -394,10 +394,10 @@ class Sms(Grammar):
     method: submit to 'action' url using GET or POST
     statusCallback: url to hit when the message is actually sent
     """
-    def __init__(self, msg, to=None, sender=None, method=None, 
+    def __init__(self, msg, to=None, sender=None, method=None,
                  action=None, statusCallback=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method, to=to, 
-                         sender=sender, statusCallback=statusCallback, 
+        Grammar.__init__(self, action=action, method=method, to=to,
+                         sender=sender, statusCallback=statusCallback,
                          **kwargs)
         Grammar.check_post_get_method(method)
         self.body = msg
@@ -414,11 +414,11 @@ class Conference(Grammar):
     waitMethod: HTTP method for waitUrl GET/POST
     """
     def __init__(self, name, muted=None, beep=None,
-                 startConferenceOnEnter=None, endConferenceOnExit=None, 
+                 startConferenceOnEnter=None, endConferenceOnExit=None,
                  waitUrl=None, waitMethod='POST', **kwargs):
         Grammar.__init__(self, muted=muted, beep=beep,
                         startConferenceOnEnter=startConferenceOnEnter,
-                        endConferenceOnExit=endConferenceOnExit, 
+                        endConferenceOnExit=endConferenceOnExit,
                         waitUrl=waitUrl,
                         waitMethod=waitMethod,
                         **kwargs)
@@ -452,7 +452,7 @@ class Record(Grammar):
     """
     def __init__(self, action=None, method=None, maxLength=None,
                  timeout=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method, 
+        Grammar.__init__(self, action=action, method=method,
                          maxLength=maxLength, timeout=timeout, **kwargs)
         Grammar.check_post_get_method(method)
 
@@ -523,4 +523,3 @@ class Utils:
         # compute signature and compare signatures
         return (base64.encodestring(hmac.new(self.auth_token, s, sha1).digest()).\
             strip() == expectedSignature)
-
