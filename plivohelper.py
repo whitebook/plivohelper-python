@@ -40,7 +40,7 @@ class REST:
     standalone python applications using the urllib/urlib2 libraries and
     inside Google App Engine applications using urlfetch.
     """
-    def __init__(self, url, auth_id='', auth_token=''):
+    def __init__(self, url, auth_id='', auth_token='', api_version='v0.1'):
         """initialize a object
 
         url: Rest API Url
@@ -53,6 +53,7 @@ class REST:
         self.auth_id = auth_id
         self.auth_token = auth_token
         self.opener = None
+        self.api_version = api_version
 
     def _build_get_uri(self, uri, params):
         if params:
@@ -133,49 +134,49 @@ class REST:
     def call(self, call_params):
         """REST Call Helper
         """
-        path = '/v0.1/Call/'
+        path = '/' + self.api_version + '/Call/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def bulk_call(self, call_params):
         """REST Bulk Call Helper
         """
-        path = '/v0.1/BulkCalls/'
+        path = '/' + self.api_version + '/BulkCalls/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def transfer_call(self, call_params):
         """REST Transfer Live Call Helper
         """
-        path = '/v0.1/TransferCall/'
+        path = '/' + self.api_version + '/TransferCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def hangup_call(self, call_params):
         """REST Hangup Live Call Helper
         """
-        path = '/v0.1/HangupCall/'
+        path = '/' + self.api_version + '/HangupCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def hangup_all_calls(self):
         """REST Hangup All Live Calls Helper
         """
-        path = '/v0.1/HangupAllCalls/'
+        path = '/' + self.api_version + '/HangupAllCalls/'
         method = 'GET'
         return self.request(path, method)
 
     def schedule_hangup(self, call_params):
         """REST Schedule Hangup Helper
         """
-        path = '/v0.1/ScheduleHangup/'
+        path = '/' + self.api_version + '/ScheduleHangup/'
         method = 'POST'
         return self.request(path, method, call_params)
 
     def cancel_scheduled_hangup(self, call_params):
         """REST Cancel a Scheduled Hangup Helper
         """
-        path = '/v0.1/CancelScheduledHangup/'
+        path = '/' + self.api_version + '/CancelScheduledHangup/'
         method = 'POST'
         return self.request(path, method, call_params)
 
