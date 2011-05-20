@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import plivohelper
+import sys
 
 
 #URL of the Plivo REST Service
@@ -16,7 +17,7 @@ plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 # Transfer a call using a HTTP POST
 transfer_call_params = {
     'URL' : "http://127.0.0.1:5000/transfered/",
-    'CallUUID' : 'edaa59e1-79e0-41de-b016-f7a7570f6e9c', # Request UUID to hangup call
+    'CallUUID' : sys.argv[1], # Request UUID to hangup call
 }
 
 #Perform a Transfer on Live Call
