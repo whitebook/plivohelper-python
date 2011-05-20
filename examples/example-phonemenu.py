@@ -16,6 +16,7 @@ The following URLs are implemented:
     * /ringing/
     * /answered/
     * /phonemenu/
+    * /transfered/
 
 """
 
@@ -160,6 +161,19 @@ def gather_digits_phonemenu(destination='default'):
     response = create_phonemenu(destination)
     print "RESTXML Response => %s" % response
     return render_template('response_template.xml', response=response)
+
+@response_server.route('/transfered/', methods=['GET', 'POST'])
+def rest_xml_transfer():
+    """Implement the transfer URL"""
+    # Post params- 'request_uuid': request id given at the time of api call,
+    #               'call_uuid': unique id of call, 'reason': reason of hangup
+    print "We got a transfer notification"
+    r = plivohelper.Response()
+    r.addSpeak("Transfering call now !")
+    r.addRedirect(url='http://127.0.0.1:5000/phonemenu/exit')
+    print r
+    return render_template('response_template.xml', response=r)
+
 
 
 if __name__ == '__main__':
