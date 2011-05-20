@@ -11,6 +11,10 @@ try:
     APPENGINE = True
 except ImportError:
     APPENGINE = False
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 
 class PlivoException(Exception): pass
@@ -128,8 +132,8 @@ class REST:
             uri = self.url + '/' + path
 
         if APPENGINE:
-            return self._appengine_fetch(uri, data, method)
-        return self._urllib2_fetch(uri, data, method)
+            return json.loads(self._appengine_fetch(uri, data, method))
+        return json.loads(self._urllib2_fetch(uri, data, method))
 
     def call(self, call_params):
         """REST Call Helper
