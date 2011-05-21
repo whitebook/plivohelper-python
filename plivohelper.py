@@ -341,8 +341,12 @@ class Wait(Grammar):
 
     length: length of wait time in seconds
     """
-    def __init__(self, length=1):
-        Grammar.__init__(self, length=length)
+    def __init__(self, length, transferEnabled=False):
+        if transferEnabled:
+            transferEnabled = 'true'
+        else:
+            transferEnabled = 'false'
+        Grammar.__init__(self, length=length, transferEnabled=transferEnabled)
 
 class Redirect(Grammar):
     """Redirect call flow to another URL
