@@ -10,7 +10,7 @@ except IndexError:
     sys.exit(1)
 
 
-#URL of the Plivo REST Service
+# URL of the Plivo REST Service
 REST_API_URL = 'http://127.0.0.1:8088'
 API_VERSION = 'v0.1'
 
@@ -26,7 +26,7 @@ hangup_call_params = {
     'CallUUID' : call_uuid, # CallUUID for Hangup
 }
 
-#Perform a hangup on a Call
+# Perform a hangup on a Call
 try:
     print plivo.hangup_call(hangup_call_params)
 except Exception, e:

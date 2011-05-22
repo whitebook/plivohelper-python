@@ -3,13 +3,15 @@ import plivohelper
 import sys
 
 
+# URL of the Plivo
+=======
 try:
     call_uuid = sys.argv[1]
 except IndexError:
     print "need CallUUID argument"
     sys.exit(1)
 
-#URL of the Plivo REST Service
+# URL of the Plivo REST Service
 REST_API_URL = 'http://127.0.0.1:8088'
 API_VERSION = 'v0.1'
 
@@ -26,7 +28,7 @@ transfer_call_params = {
     'CallUUID' : call_uuid, # CallUUID to transfer
 }
 
-#Perform a Transfer on Live Call
+# Perform a Transfer on Live Call
 try:
     print plivo.transfer_call(transfer_call_params)
 except Exception, e:
