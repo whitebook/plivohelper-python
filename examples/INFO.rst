@@ -40,7 +40,8 @@ FILES
 
         This is the XML template that is used to reply
         
-    * example-phonemenu.py
+    * phonemenu directory
     
         This is a simple phone menu application that demonstrate a simple
         branching menu with options
+
