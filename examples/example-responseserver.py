@@ -25,11 +25,8 @@ The following URLs are implemented:
 def create_ivr_example():
     """Create a simple IVR which pause and play an audio"""
     r = plivohelper.Response()
-    #r.addScheduleHangup(time=10)
-    #r.addSpeak("$1000.200", loop=5, type='CURRENCY', method= 'PRONOUNCED')
     r.addSpeak("Welcome to Freeswitch", loop=2, voice='pico', engine='tts_commandline')
-    r.addPlay("http://demo.twilio.com/hellomonkey/monkex.mp3", loop=1)
-    r.addPlay("http://demo.twilio.com/hellomonkey/monkey.mp3", loop=1)
+    r.addPlay("http://127.0.0.1:5000/static/duck.mp3", loop=1)
     r.addRedirect(url='http://127.0.0.1:5000/redirect/answered/')
     r.addHangup()
     return r
@@ -94,6 +91,10 @@ def call_ringing():
     """Implement ringing URL"""
     # Post params- 'to': ringing number, 'request_uuid': request id given at the time of api call
     print "We got a ringing notification"
+    if request.method == 'POST':
+        print "POST params %s" % str(request.form.items())
+    else:
+        print "GET params %s" % str(request.args.items())
     return "OK"
 
 
@@ -103,10 +104,11 @@ def call_hangup():
     # Post params- 'request_uuid': request id given at the time of api call,
     #               'call_uuid': unique id of call, 'reason': reason of hangup
     #request_uuid, call_uuid, reason
-    if request.form:
-        print "request_uuid = " + request.form['request_uuid']
-        print "call_uuid = " + request.form['call_uuid']
-        print "reason = " + request.form['reason']
+    print "We got an hangup notification"
+    if request.method == 'POST':
+        print "POST params %s" % str(request.form.items())
+    else:
+        print "GET params %s" % str(request.args.items())
     return "OK"
 
 
@@ -117,7 +119,16 @@ def rest_xml_response():
     #               If direction is outbound then 2 additional params:
     #               'aleg_uuid': Unique Id for first leg,
     #               'aleg_request_uuid': request id given at the time of api call
-    print request.form['call_uuid']
+    if request.method == 'POST':
+        try:
+            print "CallUUID %s" % request.form['call_uuid']
+        except:
+            pass
+    else:
+        try:
+            print "CallUUID %s" % request.args['call_uuid']
+        except:
+            pass
     signature = request.headers['HTTP_X_PLIVO_SIGNATURE']
     utils = plivohelper.Utils('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
                                 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
@@ -147,8 +158,12 @@ def rest_transfer_xml_response():
 def get_digits():
     # Post params- Same params as rest_xml_response() with additional
     # 'Digit' = input digts from user
-    print "DTMF = " + request.form['Digits']
-    if request.form['Digits']=='123':
+    if request.method == 'POST':
+        dtmf = request.form.get('Digits', None)
+    else:
+        dtmf = request.args.get('Digits', None)
+    print "DTMF received: " + request.form['Digits']
+    if dtmf == '123':
         response = create_ivr_get_digits()
     else:
         response = create_ivr_get_digits()
