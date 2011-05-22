@@ -4,6 +4,7 @@ import plivohelper
 
 # URL of the Plivo REST service
 REST_API_URL = 'http://127.0.0.1:8088'
+API_VERSION = 'v0.1'
 
 # Sid and AuthToken
 SID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
@@ -13,7 +14,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 originate_dial_string = "bridge_early_media=true,hangup_after_bridge=true"
 
 # Create a REST object
-plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN)
+plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
 # Initiate a new outbound call to user/1000 using a HTTP POST
 # All parameters for bulk calls shall be separated by a delimeter
@@ -34,6 +35,6 @@ call_params = {
 }
 
 try:
-    print plivo.bulk_call(call_params)
+    print plivo.bulk_calls(call_params)
 except Exception, e:
     print e

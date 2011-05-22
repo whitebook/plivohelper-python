@@ -1,5 +1,9 @@
 from setuptools import setup
+import sys
 
+requires = []
+if sys.version_info < (2, 6):
+    requires.append('simplejson')
 
 setup(
     name = "plivohelper",
@@ -10,6 +14,7 @@ setup(
     author_email = "hello@plivo.org",
     url = "https://github.com/miglu/plivo-python-client",
     keywords = ["plivo","rest"],
+    install_requires = requires,
     classifiers = [
         "Programming Language :: Python",
         "Operating System :: OS Independent",
@@ -20,5 +25,5 @@ setup(
         "Topic :: Communications :: Telephony"
         ],
     long_description = """\
-        Python Plivo Cient Helper Library
+        Python Plivo Client Helper Library
          """ )
