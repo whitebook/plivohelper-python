@@ -2,7 +2,7 @@
 import plivohelper
 
 
-#URL of the Plivo
+# URL of the Plivo
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken
@@ -18,7 +18,7 @@ transfer_call_params = {
     'CallUUID' : 'edaa59e1-79e0-41de-b016-f7a7570f6e9c', # Request UUID to hangup call
 }
 
-#Perform a Transfer on Live Call
+# Perform a Transfer on Live Call
 try:
     print plivo.transfer_call(transfer_call_params)
 except Exception, e:

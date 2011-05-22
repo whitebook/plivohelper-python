@@ -2,14 +2,14 @@
 import plivohelper
 from time import sleep
 
-#URL of the Plivo REST service
+# URL of the Plivo REST service
 REST_API_URL = 'http://127.0.0.1:8088'
 
 # Sid and AuthToken
 SID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 
-#Define Channel Variable - http://wiki.freeswitch.org/wiki/Channel_Variables
+# Define Channel Variable - http://wiki.freeswitch.org/wiki/Channel_Variables
 originate_dial_string = "bridge_early_media=true,hangup_after_bridge=true"
 
 # Create a REST object

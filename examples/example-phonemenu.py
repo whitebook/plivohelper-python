@@ -56,7 +56,6 @@ def create_phonemenu(destination=None):
         r.addRedirect(url='http://127.0.0.1:5000/phonemenu/exit')
     elif destination == 'receptionist':
         r.addSpeak("Please wait while we connect you")
-        #<Dial>NNNNNNNNNN</Dial>
         r.addRedirect(url='http://127.0.0.1:5000/phonemenu/')
     elif destination == 'exit':
         r.addSpeak("Goodbye ! Thank you for testing Plivo")
@@ -124,7 +123,7 @@ def gather_digits_phonemenu(destination='default'):
     # Post params- Same params as rest_xml_response() with additional
     # 'Digit' = input digts from user
 
-    # Get destination from url query string: 
+    # Get destination from url query string:
     # if found overwrite current destination set
 
     if request.method == 'POST':
@@ -167,4 +166,3 @@ if __name__ == '__main__':
         print "Error : Can't find the XML template : templates/response_template.xml"
     else:
         response_server.run(host='127.0.0.1', port=5000)
-
