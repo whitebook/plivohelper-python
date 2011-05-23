@@ -142,10 +142,10 @@ class REST(object):
         method = 'POST'
         return self.request(path, method, call_params)
 
-    def bulk_calls(self, call_params):
+    def bulk_call(self, call_params):
         """REST BulkCalls Helper
         """
-        path = '/' + self.api_version + '/BulkCalls/'
+        path = '/' + self.api_version + '/BulkCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
@@ -291,9 +291,6 @@ class Grammar(object):
     def addConference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def addSms(self, msg, **kwargs):
-        return self.append(Sms(msg, **kwargs))
-
     def addRecordSession(self, **kwargs):
         return self.append(RecordSession(**kwargs))
 
@@ -399,29 +396,12 @@ class Number(Grammar):
         Grammar.__init__(self, sendDigits=sendDigits, **kwargs)
         self.body = number
 
-class Sms(Grammar):
-    """ Send a Sms Message to a phone number
-
-    to: whom to send message to, defaults based on the direction of the call
-    sender: whom to send message from.
-    action: url to request after the message is queued
-    method: submit to 'action' url using GET or POST
-    statusCallback: url to hit when the message is actually sent
-    """
-    def __init__(self, msg, to=None, sender=None, method=None,
-                 action=None, statusCallback=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method, to=to,
-                         sender=sender, statusCallback=statusCallback,
-                         **kwargs)
-        Grammar.check_post_get_method(method)
-        self.body = msg
-
 class Conference(Grammar):
     """Enter a conference room.
 
     name: room name
 
-    waitAloneSound: sound to play while alone in conference
+    waitSound: sound to play while alone in conference
     muted: enter conference muted (default False)
     startConferenceOnEnter: the conference start when this member joins (default True)
     endConferenceOnExit: close conference after this user leaves (default False)
@@ -432,10 +412,10 @@ class Conference(Grammar):
           (default 0)
     """
     def __init__(self, name,
-                 muted=False, waitAloneSound=None,
+                 muted=False, waitSound=None,
                  startConferenceOnEnter=True, endConferenceOnExit=False,
                  maxMembers=0, beep=0, **kwargs):
-        Grammar.__init__(self, muted=False, waitAloneSound=None,
+        Grammar.__init__(self, muted=False, waitSound=None,
                          startConferenceOnEnter=True, endConferenceOnExit=False,
                          maxMembers=0, beep=0, **kwargs)
         self.body = name
