@@ -417,26 +417,22 @@ class Sms(Grammar):
         self.body = msg
 
 class Conference(Grammar):
-    """Specify conference in a nested Dial element.
+    """Enter a conference room.
 
-    name: friendly name of conference
-    muted: keep this participant muted (bool)
-    beep: play a beep when this participant enters/leaves (bool)
-    startConferenceOnEnter: start conf when this participants joins (bool)
-    endConferenceOnExit: end conf when this participants leaves (bool)
-    waitUrl: TwiML url that executes before conference starts
-    waitMethod: HTTP method for waitUrl GET/POST
+    name: room name
+    waitAloneSound: sound to play while alone in conference
+    muted: enter conference muted
+    moderator: enter as moderator
+    closeOnExit: close conference after this user leaves                     |
+    maxMembers: max members in conference (0 for no limit)
     """
-    def __init__(self, name, muted=None, beep=None,
-                 startConferenceOnEnter=None, endConferenceOnExit=None,
-                 waitUrl=None, waitMethod='POST', **kwargs):
-        Grammar.__init__(self, muted=muted, beep=beep,
-                        startConferenceOnEnter=startConferenceOnEnter,
-                        endConferenceOnExit=endConferenceOnExit,
-                        waitUrl=waitUrl,
-                        waitMethod=waitMethod,
-                        **kwargs)
-        Grammar.check_post_get_method(waitMethod)
+    def __init__(self, name,
+                 muted=False, waitAloneSound=None,
+                 moderator=False, closeOnExit=False,
+                 maxMembers=0, **kwargs):
+        Grammar.__init__(self, muted=False, waitAloneSound=None,
+                         moderator=False, closeOnExit=False,
+                         maxMembers=0, **kwargs)
         self.body = name
 
 class Dial(Grammar):
