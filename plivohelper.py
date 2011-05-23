@@ -423,7 +423,7 @@ class Conference(Grammar):
     waitAloneSound: sound to play while alone in conference
     muted: enter conference muted
     moderator: enter as moderator
-    closeOnExit: close conference after this user leaves                     |
+    closeOnExit: close conference after this user leaves
     maxMembers: max members in conference (0 for no limit)
     """
     def __init__(self, name,
