@@ -20,10 +20,6 @@ FILES
     
         Example of Call Transfer
 
-    * example-response-server.py :
-
-        Demonstrate our a Response server can easily be created with Flask
-
     * example-utils.py :
 
         example using plivohelper.Util
@@ -40,7 +36,8 @@ FILES
 
         This is the XML template that is used to reply
         
-    * example-phonemenu.py
+    * phonemenu directory
     
-        This is a simple phone menu application that demonstrate a simple
+        This is a simple phone menu application that demonstrates a simple
         branching menu with options
+

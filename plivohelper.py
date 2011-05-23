@@ -38,7 +38,7 @@ class PlivoUrlRequest(urllib2.Request):
             return self.http_method
         return urllib2.Request.get_method(self)
 
-class REST:
+class REST(object):
     """Plivo helper class for making
     REST requests to the Plivo API.  This helper library works both in
     standalone python applications using the urllib/urlib2 libraries and
@@ -188,7 +188,7 @@ class REST:
 # RESTXML Response Helpers
 # ===========================================================================
 
-class Grammar:
+class Grammar(object):
     """Plivo basic grammar object.
     """
     def __init__(self, **kwargs):
@@ -200,8 +200,18 @@ class Grammar:
         for k, v in kwargs.items():
             if k == "sender":
                 k = "from"
+            if v is True or v is False:
+                v = Grammar.bool2txt(v)
             if v is not None:
                 self.attrs[k] = unicode(v)
+
+    @staticmethod
+    def bool2txt(var):
+        if var is True:
+            return 'true'
+        elif var is False:
+            return 'false'
+        return None
 
     def __repr__(self):
         """
@@ -342,10 +352,6 @@ class Wait(Grammar):
     length: length of wait time in seconds
     """
     def __init__(self, length, transferEnabled=False):
-        if transferEnabled:
-            transferEnabled = 'true'
-        else:
-            transferEnabled = 'false'
         Grammar.__init__(self, length=length, transferEnabled=transferEnabled)
 
 class Redirect(Grammar):
@@ -411,26 +417,22 @@ class Sms(Grammar):
         self.body = msg
 
 class Conference(Grammar):
-    """Specify conference in a nested Dial element.
+    """Enter a conference room.
 
-    name: friendly name of conference
-    muted: keep this participant muted (bool)
-    beep: play a beep when this participant enters/leaves (bool)
-    startConferenceOnEnter: start conf when this participants joins (bool)
-    endConferenceOnExit: end conf when this participants leaves (bool)
-    waitUrl: TwiML url that executes before conference starts
-    waitMethod: HTTP method for waitUrl GET/POST
+    name: room name
+    waitAloneSound: sound to play while alone in conference
+    muted: enter conference muted
+    moderator: enter as moderator
+    closeOnExit: close conference after this user leaves
+    maxMembers: max members in conference (0 for no limit)
     """
-    def __init__(self, name, muted=None, beep=None,
-                 startConferenceOnEnter=None, endConferenceOnExit=None,
-                 waitUrl=None, waitMethod='POST', **kwargs):
-        Grammar.__init__(self, muted=muted, beep=beep,
-                        startConferenceOnEnter=startConferenceOnEnter,
-                        endConferenceOnExit=endConferenceOnExit,
-                        waitUrl=waitUrl,
-                        waitMethod=waitMethod,
-                        **kwargs)
-        Grammar.check_post_get_method(waitMethod)
+    def __init__(self, name,
+                 muted=False, waitAloneSound=None,
+                 moderator=False, closeOnExit=False,
+                 maxMembers=0, **kwargs):
+        Grammar.__init__(self, muted=False, waitAloneSound=None,
+                         moderator=False, closeOnExit=False,
+                         maxMembers=0, **kwargs)
         self.body = name
 
 class Dial(Grammar):
@@ -501,7 +503,7 @@ class PreAnswer(Grammar):
 # Plivo Utility function and Request Validation
 # ===========================================================================
 
-class Utils:
+class Utils(object):
     def __init__(self, auth_id='', auth_token=''):
         """initialize a plivo utility object
 
