@@ -142,10 +142,10 @@ class REST:
         method = 'POST'
         return self.request(path, method, call_params)
 
-    def bulk_calls(self, call_params):
+    def bulk_call(self, call_params):
         """REST BulkCalls Helper
         """
-        path = '/' + self.api_version + '/BulkCalls/'
+        path = '/' + self.api_version + '/BulkCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
