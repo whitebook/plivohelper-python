@@ -38,7 +38,7 @@ class PlivoUrlRequest(urllib2.Request):
             return self.http_method
         return urllib2.Request.get_method(self)
 
-class REST:
+class REST(object):
     """Plivo helper class for making
     REST requests to the Plivo API.  This helper library works both in
     standalone python applications using the urllib/urlib2 libraries and
@@ -188,7 +188,7 @@ class REST:
 # RESTXML Response Helpers
 # ===========================================================================
 
-class Grammar:
+class Grammar(object):
     """Plivo basic grammar object.
     """
     def __init__(self, **kwargs):
@@ -200,8 +200,18 @@ class Grammar:
         for k, v in kwargs.items():
             if k == "sender":
                 k = "from"
+            if v is True or v is False:
+                v = Grammar.bool2txt(v)
             if v is not None:
                 self.attrs[k] = unicode(v)
+
+    @staticmethod
+    def bool2txt(var):
+        if var is True:
+            return 'true'
+        elif var is False:
+            return 'false'
+        return None
 
     def __repr__(self):
         """
@@ -342,10 +352,6 @@ class Wait(Grammar):
     length: length of wait time in seconds
     """
     def __init__(self, length, transferEnabled=False):
-        if transferEnabled:
-            transferEnabled = 'true'
-        else:
-            transferEnabled = 'false'
         Grammar.__init__(self, length=length, transferEnabled=transferEnabled)
 
 class Redirect(Grammar):
@@ -501,7 +507,7 @@ class PreAnswer(Grammar):
 # Plivo Utility function and Request Validation
 # ===========================================================================
 
-class Utils:
+class Utils(object):
     def __init__(self, auth_id='', auth_token=''):
         """initialize a plivo utility object
 
