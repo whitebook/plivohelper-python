@@ -291,9 +291,6 @@ class Grammar(object):
     def addConference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def addSms(self, msg, **kwargs):
-        return self.append(Sms(msg, **kwargs))
-
     def addRecordSession(self, **kwargs):
         return self.append(RecordSession(**kwargs))
 
