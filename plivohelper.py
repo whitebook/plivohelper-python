@@ -422,9 +422,9 @@ class Conference(Grammar):
     name: room name
 
     waitAloneSound: sound to play while alone in conference
-    muted: enter conference muted
-    startConferenceOnEnter: the conference start when this member joins
-    endConferenceOnExit: close conference after this user leaves
+    muted: enter conference muted (default False)
+    startConferenceOnEnter: the conference start when this member joins (default True)
+    endConferenceOnExit: close conference after this user leaves (default False)
     maxMembers: max members in conference (0 for no limit)
     """
     def __init__(self, name,
