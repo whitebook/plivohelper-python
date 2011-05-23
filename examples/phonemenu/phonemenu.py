@@ -42,26 +42,26 @@ def ringing():
 def hangup():
     """hangup URL"""
     # Post params- 'request_uuid': request id given at the time of api call,
-    #               'call_uuid': unique id of call, 'reason': reason of hangup
+    #               'CallUUID': unique id of call, 'reason': reason of hangup
     print "We got a hangup notification"
     return "OK"
 
 @response_server.route('/answered/', methods=['GET', 'POST'])
 def answered():
-    # Post params- 'call_uuid': unique id of call, 'direction': direction of call,
-    #               'called_no': Number which was called, 'from_no': calling number,
-    #               If direction is outbound then 2 additional params:
-    #               'aleg_uuid': Unique Id for first leg,
-    #               'aleg_request_uuid': request id given at the time of api call
+    # Post params- 'CallUUID': unique id of call, 'Direction': direction of call,
+    #               'To': Number which was called, 'From': calling number,
+    #               If Direction is outbound then 2 additional params:
+    #               'ALegUUID': Unique Id for first leg,
+    #               'ALegRequestUUID': request id given at the time of api call
 
     if request.method == 'POST':
         try:
-            print "CallUUID: %s" % request.form['call_uuid']
+            print "CallUUID: %s" % request.form['CallUUID']
         except:
             pass
     else:
         try:
-            print "CallUUID: %s" % request.args['call_uuid']
+            print "CallUUID: %s" % request.args['CallUUID']
         except:
             pass
     return phonemenu()
@@ -71,7 +71,7 @@ def answered():
 def phonemenu():
     # Default destination
     destination = 'default'
-    # Get destination from url query string: 
+    # Get destination from url query string:
     # 'node' : destination
     # 'Digits' : input digits from user
     if request.method == 'POST':
@@ -102,7 +102,7 @@ def phonemenu():
         r.addSpeak("Initech is open Monday through Friday, 9am to 5pm")
         r.addSpeak("Saturday, 10am to 3pm and closed on Sundays")
     elif destination == 'location':
-        g = r.addGetDigits(numDigits=1, 
+        g = r.addGetDigits(numDigits=1,
                    action='http://127.0.0.1:5000/phonemenu/?node=location')
         g.addSpeak("For directions from the East Bay, press 1")
         g.addSpeak("For directions from San Jose, press 2")
@@ -117,7 +117,7 @@ def phonemenu():
         r.addDial("NNNNNNNNNN")
     else:
         # default menu
-        g = r.addGetDigits(numDigits=1, 
+        g = r.addGetDigits(numDigits=1,
                            action='http://127.0.0.1:5000/phonemenu/?node=default')
         g.addSpeak("Hello and welcome to the Initech Phone Menu")
         g.addSpeak("For business hours, press 1")
@@ -135,4 +135,3 @@ if __name__ == '__main__':
         print "Error : Can't find the XML template : templates/response_template.xml"
     else:
         response_server.run(host='127.0.0.1', port=5000)
-
