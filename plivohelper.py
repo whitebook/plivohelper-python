@@ -420,18 +420,19 @@ class Conference(Grammar):
     """Enter a conference room.
 
     name: room name
+
     waitAloneSound: sound to play while alone in conference
     muted: enter conference muted
-    moderator: enter as moderator
-    closeOnExit: close conference after this user leaves
+    startConferenceOnEnter: the conference start when this member joins
+    endConferenceOnExit: close conference after this user leaves
     maxMembers: max members in conference (0 for no limit)
     """
     def __init__(self, name,
                  muted=False, waitAloneSound=None,
-                 moderator=False, closeOnExit=False,
+                 startConferenceOnEnter=True, endConferenceOnExit=False,
                  maxMembers=0, **kwargs):
         Grammar.__init__(self, muted=False, waitAloneSound=None,
-                         moderator=False, closeOnExit=False,
+                         startConferenceOnEnter=True, endConferenceOnExit=False,
                          maxMembers=0, **kwargs)
         self.body = name
 
