@@ -399,39 +399,22 @@ class Number(Grammar):
         Grammar.__init__(self, sendDigits=sendDigits, **kwargs)
         self.body = number
 
-class Sms(Grammar):
-    """ Send a Sms Message to a phone number
-
-    to: whom to send message to, defaults based on the direction of the call
-    sender: whom to send message from.
-    action: url to request after the message is queued
-    method: submit to 'action' url using GET or POST
-    statusCallback: url to hit when the message is actually sent
-    """
-    def __init__(self, msg, to=None, sender=None, method=None,
-                 action=None, statusCallback=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method, to=to,
-                         sender=sender, statusCallback=statusCallback,
-                         **kwargs)
-        Grammar.check_post_get_method(method)
-        self.body = msg
-
 class Conference(Grammar):
     """Enter a conference room.
 
     name: room name
 
-    waitAloneSound: sound to play while alone in conference
+    waitSound: sound to play while alone in conference
     muted: enter conference muted (default False)
     startConferenceOnEnter: the conference start when this member joins (default True)
     endConferenceOnExit: close conference after this user leaves (default False)
     maxMembers: max members in conference (0 for no limit)
     """
     def __init__(self, name,
-                 muted=False, waitAloneSound=None,
+                 muted=False, waitSound=None,
                  startConferenceOnEnter=True, endConferenceOnExit=False,
                  maxMembers=0, **kwargs):
-        Grammar.__init__(self, muted=False, waitAloneSound=None,
+        Grammar.__init__(self, muted=False, waitSound=None,
                          startConferenceOnEnter=True, endConferenceOnExit=False,
                          maxMembers=0, **kwargs)
         self.body = name
