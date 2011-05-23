@@ -16,28 +16,31 @@ The following URLs are implemented:
     * /answered/
     * /hangup/
     * /phonemenu/
-
 """
 
-#url_for('static', filename='duck.mp3')
+
+web = {}
+web['default'] = ('receptionist','hours', 'location', 'duck')
+web['location'] = ('receptionist','east-bay', 'san-jose', 'marin')
+
 
 
 @response_server.errorhandler(404)
 def page_not_found(error):
-    """This implemente an error page when page aren't found"""
+    """error page"""
     print "404 page not found"
     return 'This URL does not exist', 404
 
 @response_server.route('/ringing/', methods=['GET', 'POST'])
 def ringing():
-    """Implement ringing URL"""
+    """ringing URL"""
     # Post params- 'to': ringing number, 'request_uuid': request id given at the time of api call
     print "We got a ringing notification"
     return "OK"
 
 @response_server.route('/hangup/', methods=['GET', 'POST'])
 def hangup():
-    """Implement the hangup URL"""
+    """hangup URL"""
     # Post params- 'request_uuid': request id given at the time of api call,
     #               'call_uuid': unique id of call, 'reason': reason of hangup
     print "We got a hangup notification"
@@ -66,69 +69,64 @@ def answered():
 
 @response_server.route('/phonemenu/', methods=['GET', 'POST'])
 def phonemenu():
-    # default destination
+    # Default destination
     destination = 'default'
     # Get destination from url query string: 
     # 'node' : destination
     # 'Digits' : input digits from user
     if request.method == 'POST':
-        destination = request.args.get('node', destination)
-        dtmf = request.form.get('Digits', None)
+        node = request.args.get('node', None)
+        dtmf = request.form.get('Digits', -1)
     else:
-        destination = request.args.get('node', destination)
-        dtmf = request.args.get('Digits', None)
+        node = request.args.get('node', None)
+        dtmf = request.args.get('Digits', -1)
+    if not node:
+        node = 'default'
+    try:
+        digits = int(dtmf)
+    except ValueError:
+        digits = -1
 
-    if dtmf:
-        print "Received DTMF %s" % str(dtmf)
-        if destination == 'default':
-            if dtmf == '1':
-                destination = 'hours'
-            elif dtmf == '2':
-                destination = 'location'
-            elif dtmf == '3':
-                destination = 'duck'
-            elif dtmf == '0':
-                destination = 'receptionist'
-        elif destination == 'location':
-            if dtmf == '1':
-                destination = 'east-bay'
-            elif dtmf == '2':
-                destination = 'san-jose'
+    if digits >= 0:
+        try:
+            destination = web[node][digits]
+        except (KeyError, IndexError):
+            destination = 'default'
 
     print "Destination %s" % str(destination)
+    print "Digits %s" % str(digits)
 
-    restxml = plivohelper.Response()
+    r = plivohelper.Response()
 
     if destination == 'hours':
-        restxml.addSpeak("Initech is open Monday through Friday, 9am to 5pm")
-        restxml.addSpeak("Saturday, 10am to 3pm and closed on Sundays")
+        r.addSpeak("Initech is open Monday through Friday, 9am to 5pm")
+        r.addSpeak("Saturday, 10am to 3pm and closed on Sundays")
     elif destination == 'location':
-        g = restxml.addGetDigits(numDigits=1, playBeep='true', 
-                           action='http://127.0.0.1:5000/phonemenu/?node=location')
+        g = r.addGetDigits(numDigits=1, 
+                   action='http://127.0.0.1:5000/phonemenu/?node=location')
         g.addSpeak("For directions from the East Bay, press 1")
         g.addSpeak("For directions from San Jose, press 2")
     elif destination == 'east-bay':
-        restxml.addSpeak("Take BART towards San Francisco / Milbrae. Get off on Powell Street. Walk a block down 4th street")
+        r.addSpeak("Take BART towards San Francisco / Milbrae. Get off on Powell Street. Walk a block down 4th street")
     elif destination == 'san-jose':
-        restxml.addSpeak("Take Cal Train to the Milbrae BART station. Take any Bart train to Powell Street")
+        r.addSpeak("Take Cal Train to the Milbrae BART station. Take any Bart train to Powell Street")
     elif destination == 'duck':
-        restxml.addPlay("http://127.0.0.1:5000/static/duck.mp3")
+        r.addPlay("http://127.0.0.1:5000/static/duck.mp3")
     elif destination == 'receptionist':
-        restxml.addSpeak("Please wait while we connect you")
-        restxml.addDial("NNNNNNNNNN")
+        r.addSpeak("Please wait while we connect you")
+        r.addDial("NNNNNNNNNN")
     else:
         # default menu
-        g = restxml.addGetDigits(numDigits=1, playBeep='true', 
-                           action='http://127.0.0.1:5000/phonemenu/?node=default', 
-                           method="GET")
+        g = r.addGetDigits(numDigits=1, 
+                           action='http://127.0.0.1:5000/phonemenu/?node=default')
         g.addSpeak("Hello and welcome to the Initech Phone Menu")
         g.addSpeak("For business hours, press 1")
         g.addSpeak("For directions, press 2")
         g.addSpeak("To hear a duck quack, press 3")
         g.addSpeak("To speak to a receptionist, press 0")
 
-    print "RESTXML Response => %s" % restxml
-    return render_template('response_template.xml', response=restxml)
+    print "RESTXML Response => %s" % r
+    return render_template('response_template.xml', response=r)
 
 
 
