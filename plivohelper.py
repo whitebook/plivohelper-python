@@ -406,14 +406,18 @@ class Conference(Grammar):
     startConferenceOnEnter: the conference start when this member joins (default True)
     endConferenceOnExit: close conference after this user leaves (default False)
     maxMembers: max members in conference (0 for no limit)
+    beep: if 0, disabled 
+          if 1, play one beep when a member enters/leaves
+          if 2 play two beeps when a member enters/leaves
+          (default 0)
     """
     def __init__(self, name,
                  muted=False, waitSound=None,
                  startConferenceOnEnter=True, endConferenceOnExit=False,
-                 maxMembers=0, **kwargs):
+                 maxMembers=0, beep=0, **kwargs):
         Grammar.__init__(self, muted=False, waitSound=None,
                          startConferenceOnEnter=True, endConferenceOnExit=False,
-                         maxMembers=0, **kwargs)
+                         maxMembers=0, beep=0, **kwargs)
         self.body = name
 
 class Dial(Grammar):
