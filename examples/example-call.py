@@ -20,7 +20,7 @@ plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 call_params = {
     'From': '919191919191', # Caller Id
     'To' : '1000', # User Number to Call
-    'Gateways' : "user/,user", # Gateway string to try dialing separated by comma. First in list will be tried first
+    'Gateways' : "user/,user/", # Gateway string to try dialing separated by comma. First in list will be tried first
     'GatewayCodecs' : "'PCMA,PCMU','PCMA,PCMU'", # Codec string as needed by FS for each gateway separated by comma
     'GatewayTimeouts' : "10,10",      # Seconds to timeout in string for each gateway separated by comma
     'GatewayRetries' : "2,1", # Retry String for Gateways separated by comma, on how many times each gateway should be retried
