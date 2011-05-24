@@ -273,9 +273,6 @@ class Grammar(object):
     def addHangup(self, **kwargs):
         return self.append(Hangup(**kwargs))
 
-    def addReject(self, **kwargs):
-        return self.append(Reject(**kwargs))
-
     def addGetDigits(self, **kwargs):
         return self.append(GetDigits(**kwargs))
 
@@ -291,14 +288,9 @@ class Grammar(object):
     def addConference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def addRecordSession(self, **kwargs):
-        return self.append(RecordSession(**kwargs))
-
     def addPreAnswer(self, **kwargs):
         return self.append(PreAnswer(**kwargs))
 
-    def addScheduleHangup(self, **kwargs):
-        return self.append(ScheduleHangup(**kwargs))
 
 class Response(Grammar):
     """Plivo response object.
@@ -308,8 +300,7 @@ class Response(Grammar):
     def __init__(self, version=None, **kwargs):
         Grammar.__init__(self, version=version, **kwargs)
         self.nestables = ['Speak', 'Play', 'GetDigits', 'Record', 'Dial',
-            'Redirect', 'Wait', 'Hangup', 'Reject', 'Sms', 'RecordSession',
-            'PreAnswer', 'ScheduleHangup', 'Conference']
+            'Redirect', 'Wait', 'Hangup', 'PreAnswer', 'Conference']
 
 class Speak(Grammar):
     """Speak text
@@ -364,8 +355,16 @@ class Redirect(Grammar):
 class Hangup(Grammar):
     """Hangup the call
     """
-    def __init__(self, **kwargs):
-        Grammar.__init__(self)
+    reason = ('rejected', 'busy')
+
+    def __init__(self, reason=None, schedule=None, **kwargs):
+        Grammar.__init__(self, reason=reason, schedule=schedule, **kwargs)
+        if not reason in self.reason:
+            raise PlivoException( \
+                    "Invalid reason parameter, must be BUSY or REJECTED")
+        if int(schedule) < 1:
+            raise PlivoException( \
+                    "Schedule Must be greater than 0")
 
 class GetDigits(Grammar):
     """Get digits from the caller's keypad
@@ -406,7 +405,7 @@ class Conference(Grammar):
     startConferenceOnEnter: the conference start when this member joins (default True)
     endConferenceOnExit: close conference after this user leaves (default False)
     maxMembers: max members in conference (0 for no limit)
-    beep: if 0, disabled 
+    beep: if 0, disabled
           if 1, play one beep when a member enters/leaves
           if 2 play two beeps when a member enters/leaves
           (default 0)
@@ -450,32 +449,6 @@ class Record(Grammar):
         Grammar.__init__(self, action=action, method=method,
                          maxLength=maxLength, timeout=timeout, **kwargs)
         Grammar.check_post_get_method(method)
-
-class Reject(Grammar):
-    """Reject an incoming call
-
-    reason: message to play when rejecting a call
-    """
-    REJECTED = 'rejected'
-    BUSY = 'busy'
-
-    def __init__(self, reason=None, **kwargs):
-        Grammar.__init__(self, reason=reason, **kwargs)
-        if not reason in (self.REJECTED, self.BUSY):
-            raise PlivoException( \
-                "Invalid reason parameter, must be BUSY or REJECTED")
-
-class RecordSession(Grammar):
-    """Record the call session
-    """
-    def __init__(self, prefix=None, **kwargs):
-        Grammar.__init__(self, prefix=None, **kwargs)
-
-class ScheduleHangup(Grammar):
-    """Schedule Hangup of call after a certain time
-    """
-    def __init__(self, time=None, **kwargs):
-        Grammar.__init__(self, time=time, **kwargs)
 
 class PreAnswer(Grammar):
     """Answer the call in Early Media Mode and execute nested grammar
