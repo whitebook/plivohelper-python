@@ -21,8 +21,6 @@ SUPPORTED GRAMMAR:
     Number
     Conference
     PreAnswer
-    RecordSession
-    ScheduleHangup
 """
 
 import plivohelper
@@ -48,7 +46,7 @@ print "\n\n"
 r = plivohelper.Response()
 r.addSpeak("Hello World", loop=10)
 r.addDial("4155551212", timeLimit=45)
-r.addScheduleHangup(time=10)
+r.addHangup(schedule=10)
 r.addPlay("http://www.mp3.com")
 print r
 print "\n\n"
