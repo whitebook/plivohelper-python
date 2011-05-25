@@ -355,16 +355,15 @@ class Redirect(Element):
 class Hangup(Element):
     """Hangup the call
     """
-    reason = ('rejected', 'busy')
+    VALID_REASONS = ('rejected', 'busy')
 
-    def __init__(self, reason=None, schedule=None, **kwargs):
+    def __init__(self, reason=None, schedule=0, **kwargs):
         Element.__init__(self, reason=reason, schedule=schedule, **kwargs)
-        if not reason in self.reason:
-            raise PlivoException( \
-                    "Invalid reason parameter, must be BUSY or REJECTED")
-        if int(schedule) < 1:
-            raise PlivoException( \
-                    "Schedule Must be greater than 0")
+        if not reason in self.VALID_REASONS:
+            reason = ''
+        schedule = int(schedule)
+        if schedule < 0:
+            schedule = 0
 
 class GetDigits(Element):
     """Get digits from the caller's keypad
