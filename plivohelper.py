@@ -410,10 +410,14 @@ class Conference(Element):
           (default false)
     maxMembers: max members in conference
           (0 for max : 200)
-    beep: if 0, disabled
-          if 1, play one beep when a member enters/leaves
-          if 2 play two beeps when a member enters/leaves
-          (default 0)
+    enterSound: if "", disabled
+            if beep:1, play one beep when a member enters
+            if bep:2 play two beeps when a member enters
+            (default "")
+    exitSound: if "", disabled
+            if beep:1, play one beep when a member exits
+            if beep:2 play two beeps when a member exits
+            (default "")
     timeLimit: max time before closing conference
           (default 14400 seconds)
     hangupOnStar: exit conference when member press '*'
@@ -422,11 +426,13 @@ class Conference(Element):
     def __init__(self, name,
                  muted=False, waitSound=None,
                  startConferenceOnEnter=True, endConferenceOnExit=False,
-                 maxMembers=0, beep=0, hangupOnStar=False, **kwargs):
+                 maxMembers=0, enterSound=None, exitSound=None,
+                 hangupOnStar=False, timeLimit=None, **kwargs):
         Element.__init__(self, muted=muted, waitSound=waitSound,
-                         startConferenceOnEnter=startConferenceOnEnter, 
+                         startConferenceOnEnter=startConferenceOnEnter,
                          endConferenceOnExit=endConferenceOnExit,
-                         maxMembers=startConferenceOnEnter, beep=beep, 
+                         maxMembers=maxMembers, timeLimit=timeLimit,
+                         enterSound=enterSound, exitSound=exitSound,
                          hangupOnStar=hangupOnStar, **kwargs)
         self.body = name
 
