@@ -399,16 +399,16 @@ class Conference(Element):
 
     name: room name
 
-    waitSound: sound to play while alone in conference 
+    waitSound: sound to play while alone in conference
           Can be a list of sound files separated by comma.
           (default no sound)
-    muted: enter conference muted 
+    muted: enter conference muted
           (default false)
-    startConferenceOnEnter: the conference start when this member joins 
+    startConferenceOnEnter: the conference start when this member joins
           (default true)
-    endConferenceOnExit: close conference after this member leaves 
+    endConferenceOnExit: close conference after this member leaves
           (default false)
-    maxMembers: max members in conference 
+    maxMembers: max members in conference
           (0 for max : 200)
     enterSound: sound to play when a member enters
           if empty, disabled
@@ -420,9 +420,9 @@ class Conference(Element):
           if 'beep:1', play one beep
           if 'beep:2', play two beeps
           (default disabled)
-    timeLimit: max time in seconds before closing conference 
+    timeLimit: max time in seconds before closing conference
           (default 0, no timeLimit)
-    hangupOnStar: exit conference when member press '*' 
+    hangupOnStar: exit conference when member press '*'
           (default false)
     """
     def __init__(self, name,
@@ -431,7 +431,7 @@ class Conference(Element):
                  maxMembers=0, enterSound='', exitSound='',
                  timeLimit=0, hangupOnStar=False, **kwargs):
         Element.__init__(self, muted=muted, waitSound=waitSound,
-                         startConferenceOnEnter=startConferenceOnEnter, 
+                         startConferenceOnEnter=startConferenceOnEnter,
                          endConferenceOnExit=endConferenceOnExit,
                          maxMembers=maxMembers, enterSound=enterSound,
                          exitSound=exitSound, timeLimit=timeLimit,
@@ -469,7 +469,7 @@ class Record(Element):
     bothLegs: record both legs (true/false, default false)
               no beep will be played
     """
-    def __init__(self, maxLength=None, timeout=None, 
+    def __init__(self, maxLength=None, timeout=None,
                  playBeep=True, format=None,
                  filePath=None, finishOnKey=None, prefix=None,
                  bothLegs=False, **kwargs):
