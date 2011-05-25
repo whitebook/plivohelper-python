@@ -459,16 +459,25 @@ class Dial(Element):
 class Record(Element):
     """Record audio from caller
 
-    action: submit the result of the dial to this URL
-    method: submit to 'action' url using GET or POST
-    maxLength: maximum number of seconds to record
-    timeout: seconds of silence before considering the recording complete
+    maxLength: maximum number of seconds to record (default 60)
+    timeout: seconds of silence before considering the recording complete (default 500)
+    playBeep: play a beep before recording (true/false, default true)
+    format: file format (default mp3)
+    filePath: complete file path to save the file to
+    finishOnKey: Stop recording on this key
+    prefix: prefix appended to record file
+    bothLegs: record both legs (true/false, default false)
+              no beep will be played
     """
-    def __init__(self, action=None, method=None, maxLength=None,
-                 timeout=None, **kwargs):
-        Element.__init__(self, action=action, method=method,
-                         maxLength=maxLength, timeout=timeout, **kwargs)
-        Element.check_post_get_method(method)
+    def __init__(self, maxLength=None, timeout=None, 
+                 playBeep=True, format=None,
+                 filePath=None, finishOnKey=None, prefix=None,
+                 bothLegs=False, **kwargs):
+        Element.__init__(self, maxLength=maxLength,
+                         timeout=timeout, playBeep=playBeep,
+                         format=format, filePath=filePath,
+                         finishOnKey=finishOnKey, prefix=prefix,
+                         bothLegs=bothLegs, **kwargs)
 
 class PreAnswer(Element):
     """Answer the call in Early Media Mode and execute nested element
