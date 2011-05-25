@@ -400,33 +400,42 @@ class Conference(Element):
 
     name: room name
 
-    waitSound: sound to play while alone in conference
+    waitSound: sound to play while alone in conference 
+          Can be a list of sound files separated by comma.
           (default no sound)
-    muted: enter conference muted
+    muted: enter conference muted 
           (default false)
-    startConferenceOnEnter: the conference start when this member joins
+    startConferenceOnEnter: the conference start when this member joins 
           (default true)
-    endConferenceOnExit: close conference after this member leaves
+    endConferenceOnExit: close conference after this member leaves 
           (default false)
-    maxMembers: max members in conference
+    maxMembers: max members in conference 
           (0 for max : 200)
-    beep: if 0, disabled
-          if 1, play one beep when a member enters/leaves
-          if 2 play two beeps when a member enters/leaves
-          (default 0)
-    timeLimit: max time before closing conference
-          (default 14400 seconds)
-    hangupOnStar: exit conference when member press '*'
+    enterSound: sound to play when a member enters
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    exitSound: sound to play when a member exits
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    timeLimit: max time in seconds before closing conference 
+          (default 0, no timeLimit)
+    hangupOnStar: exit conference when member press '*' 
           (default false)
     """
     def __init__(self, name,
-                 muted=False, waitSound=None,
+                 muted=False, waitSound='',
                  startConferenceOnEnter=True, endConferenceOnExit=False,
-                 maxMembers=0, beep=0, hangupOnStar=False, **kwargs):
+                 maxMembers=0, enterSound='', exitSound='',
+                 timeLimit=0, hangupOnStar=False, **kwargs):
         Element.__init__(self, muted=muted, waitSound=waitSound,
                          startConferenceOnEnter=startConferenceOnEnter, 
                          endConferenceOnExit=endConferenceOnExit,
-                         maxMembers=startConferenceOnEnter, beep=beep, 
+                         maxMembers=maxMembers, enterSound=enterSound,
+                         exitSound=exitSound, timeLimit=timeLimit,
                          hangupOnStar=hangupOnStar, **kwargs)
         self.body = name
 
