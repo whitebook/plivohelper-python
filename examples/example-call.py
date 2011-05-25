@@ -26,7 +26,7 @@ call_params = {
     'GatewayRetries' : "2,1", # Retry String for Gateways separated by comma, on how many times each gateway should be retried
     'OriginateDialString' : originate_dial_string,
     'AnswerUrl' : "http://127.0.0.1:5000/answered/",
-    'HangUpUrl' : "http://127.0.0.1:5000/hangup/",
+    'HangupUrl' : "http://127.0.0.1:5000/hangup/",
     'RingUrl' : "http://127.0.0.1:5000/ringing/",
 }
 
