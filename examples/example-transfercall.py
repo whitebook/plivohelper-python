@@ -4,7 +4,6 @@ import sys
 
 
 # URL of the Plivo
-=======
 try:
     call_uuid = sys.argv[1]
 except IndexError:
