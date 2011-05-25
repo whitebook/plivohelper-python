@@ -142,10 +142,10 @@ class REST(object):
         method = 'POST'
         return self.request(path, method, call_params)
 
-    def bulk_calls(self, call_params):
+    def bulk_call(self, call_params):
         """REST BulkCalls Helper
         """
-        path = '/' + self.api_version + '/BulkCalls/'
+        path = '/' + self.api_version + '/BulkCall/'
         method = 'POST'
         return self.request(path, method, call_params)
 
@@ -188,20 +188,20 @@ class REST(object):
 # RESTXML Response Helpers
 # ===========================================================================
 
-class Grammar(object):
-    """Plivo basic grammar object.
+class Element(object):
+    """Plivo basic element object.
     """
     def __init__(self, **kwargs):
         self.name = self.__class__.__name__
         self.body = None
         self.nestables = None
-        self.grammar = []
+        self.elements = []
         self.attrs = {}
         for k, v in kwargs.items():
             if k == "sender":
                 k = "from"
             if v is True or v is False:
-                v = Grammar.bool2txt(v)
+                v = Element.bool2txt(v)
             if v is not None:
                 self.attrs[k] = unicode(v)
 
@@ -215,45 +215,45 @@ class Grammar(object):
 
     def __repr__(self):
         """
-        String representation of a grammar
+        String representation of a element
         """
         doc = Document()
         return self._xml(doc).toxml()
 
     def _xml(self, root):
         """
-        Return an XML element representing this grammar
+        Return an XML element representing this element
         """
-        grammar = root.createElement(self.name)
+        element = root.createElement(self.name)
 
         # Add attributes
         keys = self.attrs.keys()
         keys.sort()
         for a in keys:
-            grammar.setAttribute(a, self.attrs[a])
+            element.setAttribute(a, self.attrs[a])
 
         if self.body:
             text = root.createTextNode(self.body)
-            grammar.appendChild(text)
+            element.appendChild(text)
 
-        for c in self.grammar:
-            grammar.appendChild(c._xml(root))
+        for c in self.elements:
+            element.appendChild(c._xml(root))
 
-        return grammar
+        return element
 
     @staticmethod
     def check_post_get_method(method=None):
         if not method in ('GET', 'POST'):
             raise PlivoException("Invalid method parameter, must be 'GET' or 'POST'")
 
-    def append(self, grammar):
+    def append(self, element):
         if not self.nestables:
             raise PlivoException("%s is not nestable" % self.name)
-        if not grammar.name in self.nestables:
+        if not element.name in self.nestables:
             raise PlivoException("%s is not nestable inside %s" % \
-                            (grammar.name, self.name))
-        self.grammar.append(grammar)
-        return grammar
+                            (element.name, self.name))
+        self.elements.append(element)
+        return element
 
     def asUrl(self):
         return urllib.quote(str(self))
@@ -273,9 +273,6 @@ class Grammar(object):
     def addHangup(self, **kwargs):
         return self.append(Hangup(**kwargs))
 
-    def addReject(self, **kwargs):
-        return self.append(Reject(**kwargs))
-
     def addGetDigits(self, **kwargs):
         return self.append(GetDigits(**kwargs))
 
@@ -291,30 +288,21 @@ class Grammar(object):
     def addConference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
 
-    def addSms(self, msg, **kwargs):
-        return self.append(Sms(msg, **kwargs))
-
-    def addRecordSession(self, **kwargs):
-        return self.append(RecordSession(**kwargs))
-
     def addPreAnswer(self, **kwargs):
         return self.append(PreAnswer(**kwargs))
 
-    def addScheduleHangup(self, **kwargs):
-        return self.append(ScheduleHangup(**kwargs))
 
-class Response(Grammar):
+class Response(Element):
     """Plivo response object.
 
     version: Plivo API version 0.1
     """
     def __init__(self, version=None, **kwargs):
-        Grammar.__init__(self, version=version, **kwargs)
+        Element.__init__(self, version=version, **kwargs)
         self.nestables = ['Speak', 'Play', 'GetDigits', 'Record', 'Dial',
-            'Redirect', 'Wait', 'Hangup', 'Reject', 'Sms', 'RecordSession',
-            'PreAnswer', 'ScheduleHangup', 'Conference']
+            'Redirect', 'Wait', 'Hangup', 'PreAnswer', 'Conference']
 
-class Speak(Grammar):
+class Speak(Element):
     """Speak text
 
     text: text to say
@@ -328,7 +316,7 @@ class Speak(Grammar):
     GERMAN = 'de'
 
     def __init__(self, text, voice=None, language='en', loop=1, **kwargs):
-        Grammar.__init__(self, voice=voice, language=language, loop=loop, **kwargs)
+        Element.__init__(self, voice=voice, language=language, loop=loop, **kwargs)
         self.body = text
         if not language in (self.ENGLISH, self.SPANISH,
                             self.FRENCH, self.GERMAN):
@@ -336,41 +324,49 @@ class Speak(Grammar):
                 "Invalid Say language parameter, must be " + \
                 "'en', 'es', 'fr', or 'de'")
 
-class Play(Grammar):
+class Play(Element):
     """Play audio file at a URL
 
     url: url of audio file, MIME type on file must be set correctly
     loop: number of time to say this text
     """
     def __init__(self, url, loop=1, **kwargs):
-        Grammar.__init__(self, loop=loop, **kwargs)
+        Element.__init__(self, loop=loop, **kwargs)
         self.body = url
 
-class Wait(Grammar):
+class Wait(Element):
     """Wait for some time to further process the call
 
     length: length of wait time in seconds
     """
     def __init__(self, length, transferEnabled=False):
-        Grammar.__init__(self, length=length, transferEnabled=transferEnabled)
+        Element.__init__(self, length=length, transferEnabled=transferEnabled)
 
-class Redirect(Grammar):
+class Redirect(Element):
     """Redirect call flow to another URL
 
     url: redirect url
     """
     def __init__(self, url=None, method="POST", **kwargs):
-        Grammar.__init__(self, method=method, **kwargs)
-        Grammar.check_post_get_method(method)
+        Element.__init__(self, method=method, **kwargs)
+        Element.check_post_get_method(method)
         self.body = url
 
-class Hangup(Grammar):
+class Hangup(Element):
     """Hangup the call
     """
-    def __init__(self, **kwargs):
-        Grammar.__init__(self)
+    reason = ('rejected', 'busy')
 
-class GetDigits(Grammar):
+    def __init__(self, reason=None, schedule=None, **kwargs):
+        Element.__init__(self, reason=reason, schedule=schedule, **kwargs)
+        if not reason in self.reason:
+            raise PlivoException( \
+                    "Invalid reason parameter, must be BUSY or REJECTED")
+        if int(schedule) < 1:
+            raise PlivoException( \
+                    "Schedule Must be greater than 0")
+
+class GetDigits(Element):
     """Get digits from the caller's keypad
 
     action: URL to which the digits entered will be sent
@@ -383,124 +379,112 @@ class GetDigits(Grammar):
                  numDigits=1, timeout=5,
                  finishOnKey=None, **kwargs):
 
-        Grammar.__init__(self, action=action, method=method,
+        Element.__init__(self, action=action, method=method,
                          numDigits=numDigits, timeout=timeout,
                          finishOnKey=finishOnKey, **kwargs)
-        Grammar.check_post_get_method(method)
+        Element.check_post_get_method(method)
         self.nestables = ['Speak', 'Play', 'Wait']
 
-class Number(Grammar):
+class Number(Element):
     """Specify phone number in a nested Dial element.
 
     number: phone number to dial
     sendDigits: key to press after connecting to the number
     """
     def __init__(self, number, sendDigits=None, **kwargs):
-        Grammar.__init__(self, sendDigits=sendDigits, **kwargs)
+        Element.__init__(self, sendDigits=sendDigits, **kwargs)
         self.body = number
 
-class Sms(Grammar):
-    """ Send a Sms Message to a phone number
+class Conference(Element):
+    """Enter a conference room.
 
-    to: whom to send message to, defaults based on the direction of the call
-    sender: whom to send message from.
-    action: url to request after the message is queued
-    method: submit to 'action' url using GET or POST
-    statusCallback: url to hit when the message is actually sent
+    name: room name
+
+    waitSound: sound to play while alone in conference
+          Can be a list of sound files separated by comma.
+          (default no sound)
+    muted: enter conference muted
+          (default false)
+    startConferenceOnEnter: the conference start when this member joins
+          (default true)
+    endConferenceOnExit: close conference after this member leaves
+          (default false)
+    maxMembers: max members in conference
+          (0 for max : 200)
+    enterSound: sound to play when a member enters
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    exitSound: sound to play when a member exits
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    timeLimit: max time in seconds before closing conference
+          (default 0, no timeLimit)
+    hangupOnStar: exit conference when member press '*'
+          (default false)
     """
-    def __init__(self, msg, to=None, sender=None, method=None,
-                 action=None, statusCallback=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method, to=to,
-                         sender=sender, statusCallback=statusCallback,
-                         **kwargs)
-        Grammar.check_post_get_method(method)
-        self.body = msg
-
-class Conference(Grammar):
-    """Specify conference in a nested Dial element.
-
-    name: friendly name of conference
-    muted: keep this participant muted (bool)
-    beep: play a beep when this participant enters/leaves (bool)
-    startConferenceOnEnter: start conf when this participants joins (bool)
-    endConferenceOnExit: end conf when this participants leaves (bool)
-    waitUrl: TwiML url that executes before conference starts
-    waitMethod: HTTP method for waitUrl GET/POST
-    """
-    def __init__(self, name, muted=None, beep=None,
-                 startConferenceOnEnter=None, endConferenceOnExit=None,
-                 waitUrl=None, waitMethod='POST', **kwargs):
-        Grammar.__init__(self, muted=muted, beep=beep,
-                        startConferenceOnEnter=startConferenceOnEnter,
-                        endConferenceOnExit=endConferenceOnExit,
-                        waitUrl=waitUrl,
-                        waitMethod=waitMethod,
-                        **kwargs)
-        Grammar.check_post_get_method(waitMethod)
+    def __init__(self, name,
+                 muted=False, waitSound='',
+                 startConferenceOnEnter=True, endConferenceOnExit=False,
+                 maxMembers=0, enterSound='', exitSound='',
+                 timeLimit=0, hangupOnStar=False, **kwargs):
+        Element.__init__(self, muted=muted, waitSound=waitSound,
+                         startConferenceOnEnter=startConferenceOnEnter,
+                         endConferenceOnExit=endConferenceOnExit,
+                         maxMembers=maxMembers, enterSound=enterSound,
+                         exitSound=exitSound, timeLimit=timeLimit,
+                         hangupOnStar=hangupOnStar, **kwargs)
         self.body = name
 
-class Dial(Grammar):
+class Dial(Element):
     """Dial another phone number and connect it to this call
 
     action: submit the result of the dial to this URL
     method: submit to 'action' url using GET or POST
     """
     def __init__(self, number=None, action=None, method='POST', **kwargs):
-        Grammar.__init__(self, action=action, method=method, **kwargs)
+        Element.__init__(self, action=action, method=method, **kwargs)
         self.nestables = ['Number']
-        Grammar.check_post_get_method(method)
-        numbers = number.split(',')
-        if numbers:
-            for n in numbers:
-                self.append(Number(n.strip()))
-        else:
-            self.body = number
+        Element.check_post_get_method(method)
+        if number:
+            numbers = number.split(',')
+            if numbers:
+                for n in numbers:
+                    self.append(Number(n.strip()))
+            else:
+                self.body = number
 
-class Record(Grammar):
+class Record(Element):
     """Record audio from caller
 
-    action: submit the result of the dial to this URL
-    method: submit to 'action' url using GET or POST
-    maxLength: maximum number of seconds to record
-    timeout: seconds of silence before considering the recording complete
+    maxLength: maximum number of seconds to record (default 60)
+    timeout: seconds of silence before considering the recording complete (default 500)
+    playBeep: play a beep before recording (true/false, default true)
+    format: file format (default mp3)
+    filePath: complete file path to save the file to
+    finishOnKey: Stop recording on this key
+    prefix: prefix appended to record file
+    bothLegs: record both legs (true/false, default false)
+              no beep will be played
     """
-    def __init__(self, action=None, method=None, maxLength=None,
-                 timeout=None, **kwargs):
-        Grammar.__init__(self, action=action, method=method,
-                         maxLength=maxLength, timeout=timeout, **kwargs)
-        Grammar.check_post_get_method(method)
+    def __init__(self, maxLength=None, timeout=None,
+                 playBeep=True, format=None,
+                 filePath=None, finishOnKey=None, prefix=None,
+                 bothLegs=False, **kwargs):
+        Element.__init__(self, maxLength=maxLength,
+                         timeout=timeout, playBeep=playBeep,
+                         format=format, filePath=filePath,
+                         finishOnKey=finishOnKey, prefix=prefix,
+                         bothLegs=bothLegs, **kwargs)
 
-class Reject(Grammar):
-    """Reject an incoming call
-
-    reason: message to play when rejecting a call
-    """
-    REJECTED = 'rejected'
-    BUSY = 'busy'
-
-    def __init__(self, reason=None, **kwargs):
-        Grammar.__init__(self, reason=reason, **kwargs)
-        if not reason in (self.REJECTED, self.BUSY):
-            raise PlivoException( \
-                "Invalid reason parameter, must be BUSY or REJECTED")
-
-class RecordSession(Grammar):
-    """Record the call session
-    """
-    def __init__(self, prefix=None, **kwargs):
-        Grammar.__init__(self, prefix=None, **kwargs)
-
-class ScheduleHangup(Grammar):
-    """Schedule Hangup of call after a certain time
+class PreAnswer(Element):
+    """Answer the call in Early Media Mode and execute nested element
     """
     def __init__(self, time=None, **kwargs):
-        Grammar.__init__(self, time=time, **kwargs)
-
-class PreAnswer(Grammar):
-    """Answer the call in Early Media Mode and execute nested grammar
-    """
-    def __init__(self, time=None, **kwargs):
-        Grammar.__init__(self, time=time, **kwargs)
+        Element.__init__(self, time=time, **kwargs)
         self.nestables = ['Play', 'Speak', 'GetDigits', 'Wait']
 
 
