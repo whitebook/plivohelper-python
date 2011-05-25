@@ -401,6 +401,7 @@ class Conference(Element):
     name: room name
 
     waitSound: sound to play while alone in conference
+          Can be a list of sound files separated by comma.
           (default no sound)
     muted: enter conference muted
           (default false)
@@ -410,29 +411,31 @@ class Conference(Element):
           (default false)
     maxMembers: max members in conference
           (0 for max : 200)
-    enterSound: if "", disabled
-            if beep:1, play one beep when a member enters
-            if bep:2 play two beeps when a member enters
-            (default "")
-    exitSound: if "", disabled
-            if beep:1, play one beep when a member exits
-            if beep:2 play two beeps when a member exits
-            (default "")
-    timeLimit: max time before closing conference
-          (default 14400 seconds)
+    enterSound: sound to play when a member enters
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    exitSound: sound to play when a member exits
+          if empty, disabled
+          if 'beep:1', play one beep
+          if 'beep:2', play two beeps
+          (default disabled)
+    timeLimit: max time in seconds before closing conference
+          (default 0, no timeLimit)
     hangupOnStar: exit conference when member press '*'
           (default false)
     """
     def __init__(self, name,
-                 muted=False, waitSound=None,
+                 muted=False, waitSound='',
                  startConferenceOnEnter=True, endConferenceOnExit=False,
-                 maxMembers=0, enterSound=None, exitSound=None,
-                 hangupOnStar=False, timeLimit=None, **kwargs):
+                 maxMembers=0, enterSound='', exitSound='',
+                 timeLimit=0, hangupOnStar=False, **kwargs):
         Element.__init__(self, muted=muted, waitSound=waitSound,
                          startConferenceOnEnter=startConferenceOnEnter,
                          endConferenceOnExit=endConferenceOnExit,
-                         maxMembers=maxMembers, timeLimit=timeLimit,
-                         enterSound=enterSound, exitSound=exitSound,
+                         maxMembers=maxMembers, enterSound=enterSound,
+                         exitSound=exitSound, timeLimit=timeLimit,
                          hangupOnStar=hangupOnStar, **kwargs)
         self.body = name
 
@@ -446,26 +449,36 @@ class Dial(Element):
         Element.__init__(self, action=action, method=method, **kwargs)
         self.nestables = ['Number']
         Element.check_post_get_method(method)
-        numbers = number.split(',')
-        if numbers:
-            for n in numbers:
-                self.append(Number(n.strip()))
-        else:
-            self.body = number
+        if number:
+            numbers = number.split(',')
+            if numbers:
+                for n in numbers:
+                    self.append(Number(n.strip()))
+            else:
+                self.body = number
 
 class Record(Element):
     """Record audio from caller
 
-    action: submit the result of the dial to this URL
-    method: submit to 'action' url using GET or POST
-    maxLength: maximum number of seconds to record
-    timeout: seconds of silence before considering the recording complete
+    maxLength: maximum number of seconds to record (default 60)
+    timeout: seconds of silence before considering the recording complete (default 500)
+    playBeep: play a beep before recording (true/false, default true)
+    format: file format (default mp3)
+    filePath: complete file path to save the file to
+    finishOnKey: Stop recording on this key
+    prefix: prefix appended to record file
+    bothLegs: record both legs (true/false, default false)
+              no beep will be played
     """
-    def __init__(self, action=None, method=None, maxLength=None,
-                 timeout=None, **kwargs):
-        Element.__init__(self, action=action, method=method,
-                         maxLength=maxLength, timeout=timeout, **kwargs)
-        Element.check_post_get_method(method)
+    def __init__(self, maxLength=None, timeout=None,
+                 playBeep=True, format=None,
+                 filePath=None, finishOnKey=None, prefix=None,
+                 bothLegs=False, **kwargs):
+        Element.__init__(self, maxLength=maxLength,
+                         timeout=timeout, playBeep=playBeep,
+                         format=format, filePath=filePath,
+                         finishOnKey=finishOnKey, prefix=prefix,
+                         bothLegs=bothLegs, **kwargs)
 
 class PreAnswer(Element):
     """Answer the call in Early Media Mode and execute nested element
