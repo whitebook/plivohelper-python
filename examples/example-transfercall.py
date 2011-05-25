@@ -24,7 +24,7 @@ plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
 # Transfer a call using a HTTP POST
 transfer_call_params = {
-    'URL' : "http://127.0.0.1:5000/transfered/",
+    'Url' : "http://127.0.0.1:5000/transfered/",
     'CallUUID' : call_uuid, # CallUUID to transfer
 }
 
