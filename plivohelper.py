@@ -449,12 +449,13 @@ class Dial(Element):
         Element.__init__(self, action=action, method=method, **kwargs)
         self.nestables = ['Number']
         Element.check_post_get_method(method)
-        numbers = number.split(',')
-        if numbers:
-            for n in numbers:
-                self.append(Number(n.strip()))
-        else:
-            self.body = number
+        if number:
+            numbers = number.split(',')
+            if numbers:
+                for n in numbers:
+                    self.append(Number(n.strip()))
+            else:
+                self.body = number
 
 class Record(Element):
     """Record audio from caller
