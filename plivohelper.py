@@ -194,7 +194,7 @@ class Element(object):
     def __init__(self, **kwargs):
         self.name = self.__class__.__name__
         self.body = None
-        self.nestables = None
+        self.nestables = ()
         self.elements = []
         self.attrs = {}
         for k, v in kwargs.items():
@@ -299,8 +299,8 @@ class Response(Element):
     """
     def __init__(self, version=None, **kwargs):
         Element.__init__(self, version=version, **kwargs)
-        self.nestables = ['Speak', 'Play', 'GetDigits', 'Record', 'Dial',
-            'Redirect', 'Wait', 'Hangup', 'PreAnswer', 'Conference']
+        self.nestables = ('Speak', 'Play', 'GetDigits', 'Record', 'Dial',
+            'Redirect', 'Wait', 'Hangup', 'PreAnswer', 'Conference')
 
 class Speak(Element):
     """Speak text
@@ -382,7 +382,7 @@ class GetDigits(Element):
                          numDigits=numDigits, timeout=timeout,
                          finishOnKey=finishOnKey, **kwargs)
         Element.check_post_get_method(method)
-        self.nestables = ['Speak', 'Play', 'Wait']
+        self.nestables = ('Speak', 'Play', 'Wait')
 
 class Number(Element):
     """Specify phone number in a nested Dial element.
@@ -446,8 +446,8 @@ class Dial(Element):
     """
     def __init__(self, number=None, action=None, method='POST', **kwargs):
         Element.__init__(self, action=action, method=method, **kwargs)
-        self.nestables = ['Number']
         Element.check_post_get_method(method)
+        self.nestables = ('Number',)
         if number:
             numbers = number.split(',')
             if numbers:
@@ -484,7 +484,7 @@ class PreAnswer(Element):
     """
     def __init__(self, time=None, **kwargs):
         Element.__init__(self, time=time, **kwargs)
-        self.nestables = ['Play', 'Speak', 'GetDigits', 'Wait']
+        self.nestables = ('Play', 'Speak', 'GetDigits', 'Wait')
 
 
 # Plivo Utility function and Request Validation
