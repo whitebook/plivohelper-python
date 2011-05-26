@@ -51,7 +51,7 @@ Files
 
 **examples/example-utils.py:** example usage of utilities
 
-**examples/example-responseserver.py:** example usage of live RESTXML (`Requires Flask <http://flask.pocoo.org/>`_)
+**examples/phonemenu/ (`Requires Flask <http://flask.pocoo.org/>`_)
 
 
 Credits
