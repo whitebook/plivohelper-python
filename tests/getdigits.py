@@ -74,7 +74,7 @@ def answered():
             pass
     r = plivohelper.Response()
     d = r.addGetDigits(action="http://127.0.0.1:5000/menu/", 
-                       timout=10, retries=2, finishOnKey='#',
+                       timeout=10, retries=2, finishOnKey='#',
                        numDigits=2, playBeep=True, 
                        validDigits="01234")
     d.addSpeak("Get Digits. Press 0, 1, 2, 3 or 4")
