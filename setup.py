@@ -8,12 +8,12 @@ if sys.version_info < (2, 6):
 setup(
     name = "plivohelper",
     py_modules = ['plivohelper'],
-    version = "0.1",
+    version = "0.1.0",
     description = "Plivo API client and RESTXML generator",
     author = "Plivo Team",
     author_email = "hello@plivo.org",
-    url = "https://github.com/miglu/plivo-python-client",
-    keywords = ["plivo","rest"],
+    url = "https://github.com/plivo/plivohelper-python",
+    keywords = ["plivo", "rest"],
     install_requires = requires,
     classifiers = [
         "Programming Language :: Python",
