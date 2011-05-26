@@ -7,7 +7,7 @@ Description
 
 The Plivo Python helper simplifies the process of making REST calls and generating RESTXML.
 
-See `Plivo Documentation <http://www.plivo.org/documentation/>`_ for more information.
+See `Plivo Documentation <http://www.plivo.org/docs/>`_ for more information.
 
 
 Installation
@@ -31,7 +31,7 @@ As shown in example-call.py, you will need to specify the ACCOUNT_ID and ACCOUNT
 
 Before you run the examples, you should have Plivo Running along with FreeSWITCH Running and a user 1000 logged in.
 
-See `Plivo Documentation <http://www.plivo.org/documentation/>`_ for more information.
+See `Plivo Documentation <http://www.plivo.org/docs/>`_ for more information.
 
 
 Files
