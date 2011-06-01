@@ -41,3 +41,9 @@ FILES
         This is a simple phone menu application that demonstrates a simple
         branching menu with options
 
+
+    * weatherbyphone directory
+    
+        This is a simple application that receive US Zipcode and provide 
+        weather forecast information
+
