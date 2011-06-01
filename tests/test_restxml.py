@@ -13,11 +13,9 @@ class PlivoTest(unittest.TestCase):
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Play(""))
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Record())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Hangup())
-        self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Reject())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Redirect())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Dial())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Conference(""))
-        self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Sms(""))
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Wait())
 
 class TestResponse(PlivoTest):
@@ -26,24 +24,20 @@ class TestResponse(PlivoTest):
         r = plivohelper.Response()
         self.assertEquals(self.strip(r), "<Response/>")
 
-    def testResponseAddAttribute(self):
-        r = plivohelper.Response(foo="bar")
-        self.assertEquals(self.strip(r), '<Response foo="bar"/>')
-
 class TestSpeak(PlivoTest):
 
     def testEmptySpeak(self):
         """should be a say with no text"""
         r = plivohelper.Response()
         r.append(plivohelper.Speak(""))
-        self.assertEquals(self.strip(r), "<Response><Speak/></Response>")
+        self.assertEquals(self.strip(r), '<Response><Speak/></Response>')
 
     def testSpeakHelloWorld(self):
         """should say hello monkey"""
         r = plivohelper.Response()
         r.append(plivohelper.Speak("Hello World"))
         r = self.strip(r)
-        self.assertEquals(r, "<Response><Speak>Hello World</Speak></Response>")
+        self.assertEquals(r, '<Response><Speak>Hello World</Speak></Response>')
 
     def testSpeakLoop(self):
         """should say hello monkey and loop 3 times"""
@@ -54,9 +48,8 @@ class TestSpeak(PlivoTest):
 
     def testSpeakAddAttribute(self):
         """add attribute"""
-        r = plivohelper.Speak("",foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<Speak foo="bar"/>')
+        self.assertRaises(plivohelper.PlivoException,
+                          plivohelper.Speak, "", foo="bar")
 
     def testSpeakBadAppend(self):
         """ should raise exceptions for wrong appending"""
@@ -76,7 +69,7 @@ class TestPlay(PlivoTest):
         r = plivohelper.Response()
         r.append(plivohelper.Play("http://hellomonkey.mp3"))
         r = self.strip(r)
-        self.assertEqual(r, "<Response><Play>http://hellomonkey.mp3</Play></Response>")
+        self.assertEqual(r, '<Response><Play>http://hellomonkey.mp3</Play></Response>')
 
     def testPlayHelloLoop(self):
         """should play hello monkey loop"""
@@ -94,9 +87,8 @@ class TestPlay(PlivoTest):
 
     def testPlayAddAttribute(self):
         """add attribute"""
-        r = plivohelper.Play("",foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<Play foo="bar"/>')
+        self.assertRaises(plivohelper.PlivoException,
+                          plivohelper.Play, "", foo="bar")
 
     def testPlayBadAppend(self):
         """ should raise exceptions for wrong appending"""
@@ -111,27 +103,13 @@ class TestRecord(PlivoTest):
         r = self.strip(r)
         self.assertEquals(r, '<Response><Record/></Response>')
 
-    def testRecordActionMethod(self):
-        """should record with an action and a get method"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Record(action="example.com", method="GET"))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Record action="example.com" method="GET"/></Response>')
-
     def testRecordMaxlengthFinishTimeout(self):
         """should record with an maxlength, finishonkey, and timeout"""
         r = plivohelper.Response()
         r.append(plivohelper.Record(timeout=4,finishOnKey="#", maxLength=30))
         r = self.strip(r)
         self.assertEquals(r, '<Response><Record finishOnKey="#" maxLength="30" timeout="4"/></Response>')
-
-    def testRecordTranscribeCallback(self):
-        """should record with a transcribe and transcribeCallback"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Record(transcribeCallback="example.com"))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Record transcribeCallback="example.com"/></Response>')
-
+  
     def testRecordMaxlengthFinishTimeout(self):
         """should record with an maxlength, finishonkey, and timeout"""
         r = plivohelper.Response()
@@ -141,9 +119,8 @@ class TestRecord(PlivoTest):
 
     def testRecordAddAttribute(self):
         """add attribute"""
-        r = plivohelper.Record(foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<Record foo="bar"/>')
+        self.assertRaises(plivohelper.PlivoException,
+                          plivohelper.Record, foo="bar")
 
     def testRecordBadAppend(self):
         """ should raise exceptions for wrong appending"""
@@ -171,9 +148,8 @@ class TestRedirect(PlivoTest):
 
     def testAddAttribute(self):
         """add attribute"""
-        r = plivohelper.Redirect("",foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<Redirect foo="bar"/>')
+        self.assertRaises(plivohelper.PlivoException,
+                          plivohelper.Redirect, "", foo="bar")
 
     def testBadAppend(self):
         """ should raise exceptions for wrong appending"""
@@ -189,80 +165,33 @@ class TestHangup(PlivoTest):
         r = self.strip(r)
         self.assertEquals(r, '<Response><Hangup/></Response>')
 
-
     def testHangupConvience(self):
-        """should raises exceptions for wrong appending"""
+        """convenience: should Hangup to a url via POST"""
         r = plivohelper.Response()
         r.addHangup()
         r = self.strip(r)
         self.assertEquals(r, '<Response><Hangup/></Response>')
 
+    def testSchedule(self):
+        r = plivohelper.Response()
+        r.addHangup(schedule=10)
+        r = self.strip(r)
+        self.assertEquals(r, '<Response><Hangup schedule="10"/></Response>')
+
+    def testSchedule(self):
+        r = plivohelper.Response()
+        r.addHangup(reason="rejected")
+        r = self.strip(r)
+        self.assertEquals(r, '<Response><Hangup reason="rejected"/></Response>')
+
+    def testAddAttribute(self):
+        self.assertRaises(plivohelper.PlivoException,
+                          plivohelper.Hangup, foo="bar")
+
     def testBadAppend(self):
         """ should raise exceptions for wrong appending"""
         self.improperAppend(plivohelper.Hangup())
 
-
-class TestReject(PlivoTest):
-
-    def testReject(self):
-        """should be a Reject with default reason"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Reject())
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Reject/></Response>')
-
-    def testRejectConvenience(self):
-        """should be a Reject with reason Busy"""
-        r = plivohelper.Response()
-        r.addReject(reason='busy')
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Reject reason="busy"/></Response>')
-
-    def testBadAppend(self):
-        """ should raise exceptions for wrong appending"""
-        self.improperAppend(plivohelper.Reject())
-
-class TestSms(PlivoTest):
-
-    def testEmpty(self):
-        """Test empty sms verb"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Sms(""))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Sms/></Response>')
-
-    def testBody(self):
-        """Test hello world"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Sms("Hello, World"))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Sms>Hello, World</Sms></Response>')
-
-    def testToFromAction(self):
-        """ Test the to, from, and status callback"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Sms("Hello, World", to=1231231234, sender=3453453456,
-            statusCallback="example.com?id=34&action=hey"))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Sms from="3453453456" statusCallback="example.com?id=34&amp;action=hey" to="1231231234">Hello, World</Sms></Response>')
-
-    def testActionMethod(self):
-        """ Test the action and method parameters on Sms"""
-        r = plivohelper.Response()
-        r.append(plivohelper.Sms("Hello", method="POST", action="example.com?id=34&action=hey"))
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Sms action="example.com?id=34&amp;action=hey" method="POST">Hello</Sms></Response>')
-
-    def testConvience(self):
-        """should raises exceptions for wrong appending"""
-        r = plivohelper.Response()
-        r.addSms("Hello")
-        r = self.strip(r)
-        self.assertEquals(r, '<Response><Sms>Hello</Sms></Response>')
-
-    def testBadAppend(self):
-        """ should raise exceptions for wrong appending"""
-        self.improperAppend(plivohelper.Sms("Hello"))
 
 class TestDial(PlivoTest):
 
@@ -271,7 +200,7 @@ class TestDial(PlivoTest):
         r = plivohelper.Response()
         r.append(plivohelper.Dial("1231231234"))
         r = self.strip(r)
-        self.assertEquals(r, '<Response><Dial>1231231234</Dial></Response>')
+        self.assertEquals(r, '<Response><Dial><Number>1231231234</Number></Dial></Response>')
 
     def testConvienceMethod(self):
         """ should dial to a url via post"""
@@ -297,6 +226,8 @@ class TestDial(PlivoTest):
         r = self.strip(r)
         self.assertEquals(r, '<Response><Dial><Number>1231231234</Number></Dial></Response>')
 
+class TestConference(PlivoTest):
+
     def testAddConference(self):
         """ add a conference to a dial"""
         r = plivohelper.Response()
@@ -313,10 +244,8 @@ class TestDial(PlivoTest):
 
     def testAddAttribute(self):
         """add attribute"""
-        r = plivohelper.Conference("MyRoom",foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<Conference foo="bar">MyRoom</Conference>')
-
+        self.assertRaises(plivohelper.PlivoException,
+                    plivohelper.Conference, "MyRoom", foo="bar")
 
     def testBadAppend(self):
         """ should raise exceptions for wrong appending"""
@@ -331,6 +260,11 @@ class TestGetDigits(PlivoTest):
         r.append(plivohelper.GetDigits())
         r = self.strip(r)
         self.assertEquals(r, '<Response><GetDigits/></Response>')
+
+    def testAddAttribute(self):
+        """add attribute"""
+        self.assertRaises(plivohelper.PlivoException,
+                    plivohelper.GetDigits, foo="bar")
 
     def testNestedSpeakPlayWait(self):
         """ a gather with a say, play, and pause"""
@@ -354,12 +288,6 @@ class TestGetDigits(PlivoTest):
         r = self.strip(r)
         self.assertEquals(r, '<Response><GetDigits><Speak>Hey</Speak><Play>hey.mp3</Play><Wait/></GetDigits></Response>')
 
-    def testAddAttribute(self):
-        """add attribute"""
-        r = plivohelper.GetDigits(foo="bar")
-        r = self.strip(r)
-        self.assertEquals(r, '<GetDigits foo="bar"/>')
-
     def testImproperNesting(self):
         """ bad nesting"""
         verb = plivohelper.GetDigits()
@@ -369,7 +297,6 @@ class TestGetDigits(PlivoTest):
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Redirect())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Dial())
         self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Conference(""))
-        self.assertRaises(plivohelper.PlivoException, verb.append, plivohelper.Sms(""))
 
 if __name__ == '__main__':
     unittest.main()

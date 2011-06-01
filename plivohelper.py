@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__VERSION__ = "0.1"
+__VERSION__ = "v0.1"
 
 import urllib, urllib2, base64, hmac
 from hashlib import sha1
@@ -18,6 +18,7 @@ except ImportError:
 
 
 class PlivoException(Exception): pass
+
 
 # Plivo REST Helpers
 # ===========================================================================
@@ -44,7 +45,7 @@ class REST(object):
     standalone python applications using the urllib/urlib2 libraries and
     inside Google App Engine applications using urlfetch.
     """
-    def __init__(self, url, auth_id='', auth_token='', api_version='v0.1'):
+    def __init__(self, url, auth_id='', auth_token='', api_version=__VERSION__):
         """initialize a object
 
         url: Rest API Url
@@ -191,6 +192,8 @@ class REST(object):
 class Element(object):
     """Plivo basic element object.
     """
+    VALID_ATTRS = ()
+
     def __init__(self, **kwargs):
         self.name = self.__class__.__name__
         self.body = None
@@ -200,18 +203,27 @@ class Element(object):
         for k, v in kwargs.items():
             if k == "sender":
                 k = "from"
-            if v is True or v is False:
-                v = Element.bool2txt(v)
+            self._is_valid_attribute(k)
+            v = Element.bool2txt(v)
             if v is not None:
                 self.attrs[k] = unicode(v)
 
+    def _is_valid_attribute(self, attr):
+        if not attr in self.VALID_ATTRS:
+            raise PlivoException("Invalid attribute '%s' for Element %s" \
+                % (attr, self.name))
+
     @staticmethod
     def bool2txt(var):
+        """Map True to 'true'
+        and False to 'false'
+        else don't modify value
+        """
         if var is True:
             return 'true'
         elif var is False:
             return 'false'
-        return None
+        return var
 
     def __repr__(self):
         """
@@ -295,10 +307,12 @@ class Element(object):
 class Response(Element):
     """Plivo response object.
 
-    version: Plivo API version 0.1
+    version: Plivo API version v0.1
     """
-    def __init__(self, version=None, **kwargs):
-        Element.__init__(self, version=version, **kwargs)
+    VALID_ATTRS = ()
+
+    def __init__(self):
+        Element.__init__(self)
         self.nestables = ('Speak', 'Play', 'GetDigits', 'Record', 'Dial',
             'Redirect', 'Wait', 'Hangup', 'PreAnswer', 'Conference')
 
@@ -310,19 +324,13 @@ class Speak(Element):
     language: language to use
     loop: number of times to say this text
     """
-    ENGLISH = 'en'
-    SPANISH = 'es'
-    FRENCH = 'fr'
-    GERMAN = 'de'
+    VALID_ATTRS = ('voice', 'language',
+                   'loop', 'engine', 'type',
+                   'method')
 
-    def __init__(self, text, voice=None, language='en', loop=1, **kwargs):
-        Element.__init__(self, voice=voice, language=language, loop=loop, **kwargs)
+    def __init__(self, text, **kwargs):
+        Element.__init__(self, **kwargs)
         self.body = text
-        if not language in (self.ENGLISH, self.SPANISH,
-                            self.FRENCH, self.GERMAN):
-            raise PlivoException( \
-                "Invalid Say language parameter, must be " + \
-                "'en', 'es', 'fr', or 'de'")
 
 class Play(Element):
     """Play audio file at a URL
@@ -330,40 +338,43 @@ class Play(Element):
     url: url of audio file, MIME type on file must be set correctly
     loop: number of time to say this text
     """
-    def __init__(self, url, loop=1, **kwargs):
-        Element.__init__(self, loop=loop, **kwargs)
+    VALID_ATTRS = ('loop',)
+    def __init__(self, url, **kwargs):
+        Element.__init__(self, **kwargs)
         self.body = url
 
 class Wait(Element):
     """Wait for some time to further process the call
 
     length: length of wait time in seconds
+    transferEnabled: if set to True allows the call to be transferred 
+        via REST API even while in waiting state. 
+        By default this is set to False, and in this case 
+        transfer will only happen once wait finishes.
     """
-    def __init__(self, length, transferEnabled=False):
-        Element.__init__(self, length=length, transferEnabled=transferEnabled)
+    VALID_ATTRS = ('length', 'transferEnabled')
+    def __init__(self, **kwargs):
+        Element.__init__(self, **kwargs)
 
 class Redirect(Element):
     """Redirect call flow to another URL
 
     url: redirect url
+    method: POST or GET (default POST)
     """
-    def __init__(self, url=None, method="POST", **kwargs):
-        Element.__init__(self, method=method, **kwargs)
-        Element.check_post_get_method(method)
+    VALID_ATTRS = ('method',)
+
+    def __init__(self, url=None, **kwargs):
+        Element.__init__(self, **kwargs)
         self.body = url
 
 class Hangup(Element):
     """Hangup the call
     """
-    VALID_REASONS = ('rejected', 'busy')
+    VALID_ATTRS = ('schedule', 'reason')
 
-    def __init__(self, reason=None, schedule=0, **kwargs):
-        Element.__init__(self, reason=reason, schedule=schedule, **kwargs)
-        if not reason in self.VALID_REASONS:
-            reason = ''
-        schedule = int(schedule)
-        if schedule < 0:
-            schedule = 0
+    def __init__(self, **kwargs):
+        Element.__init__(self, **kwargs)
 
 class GetDigits(Element):
     """Get digits from the caller's keypad
@@ -374,14 +385,12 @@ class GetDigits(Element):
     timeout: wait for this many seconds before returning
     finishOnKey: key that triggers the end of caller input
     """
-    def __init__(self, action=None, method='POST',
-                 numDigits=1, timeout=5,
-                 finishOnKey=None, **kwargs):
+    VALID_ATTRS = ('action', 'method', 'timeout', 'finishOnKey',
+                   'numDigits', 'retries', 'invalidDigitsSound', 
+                   'validDigits', 'playBeep')
 
-        Element.__init__(self, action=action, method=method,
-                         numDigits=numDigits, timeout=timeout,
-                         finishOnKey=finishOnKey, **kwargs)
-        Element.check_post_get_method(method)
+    def __init__(self, **kwargs):
+        Element.__init__(self, **kwargs)
         self.nestables = ('Speak', 'Play', 'Wait')
 
 class Number(Element):
@@ -390,14 +399,16 @@ class Number(Element):
     number: phone number to dial
     sendDigits: key to press after connecting to the number
     """
-    def __init__(self, number, sendDigits=None, **kwargs):
-        Element.__init__(self, sendDigits=sendDigits, **kwargs)
+    VALID_ATTRS = ('sendDigits', 'gateways', 'gatewayCodecs',
+                   'gatewayTimeouts', 'gatewayRetries', 'extraDialString')
+    def __init__(self, number, **kwargs):
+        Element.__init__(self, **kwargs)
         self.body = number
 
 class Conference(Element):
     """Enter a conference room.
 
-    name: room name
+    room: room name
 
     waitSound: sound to play while alone in conference
           Can be a list of sound files separated by comma.
@@ -425,18 +436,13 @@ class Conference(Element):
     hangupOnStar: exit conference when member press '*'
           (default false)
     """
-    def __init__(self, name,
-                 muted=False, waitSound='',
-                 startConferenceOnEnter=True, endConferenceOnExit=False,
-                 maxMembers=0, enterSound='', exitSound='',
-                 timeLimit=0, hangupOnStar=False, **kwargs):
-        Element.__init__(self, muted=muted, waitSound=waitSound,
-                         startConferenceOnEnter=startConferenceOnEnter,
-                         endConferenceOnExit=endConferenceOnExit,
-                         maxMembers=maxMembers, enterSound=enterSound,
-                         exitSound=exitSound, timeLimit=timeLimit,
-                         hangupOnStar=hangupOnStar, **kwargs)
-        self.body = name
+    VALID_ATTRS = ('muted','beep','startConferenceOnEnter',
+                   'endConferenceOnExit','waitSound','enterSound', 'exitSound',
+                   'timeLimit', 'hangupOnStar', 'maxMembers')
+
+    def __init__(self, room, **kwargs):
+        Element.__init__(self, **kwargs)
+        self.body = room
 
 class Dial(Element):
     """Dial another phone number and connect it to this call
@@ -444,9 +450,12 @@ class Dial(Element):
     action: submit the result of the dial to this URL
     method: submit to 'action' url using GET or POST
     """
-    def __init__(self, number=None, action=None, method='POST', **kwargs):
-        Element.__init__(self, action=action, method=method, **kwargs)
-        Element.check_post_get_method(method)
+    VALID_ATTRS = ('action','method','timeout','hangupOnStar',
+                   'timeLimit','callerId', 'confirmSound', 
+                   'dialMusic', 'confirmKey')
+
+    def __init__(self, number=None, **kwargs):
+        Element.__init__(self, **kwargs)
         self.nestables = ('Number',)
         if number:
             numbers = number.split(',')
@@ -469,21 +478,20 @@ class Record(Element):
     bothLegs: record both legs (true/false, default false)
               no beep will be played
     """
-    def __init__(self, maxLength=None, timeout=None,
-                 playBeep=True, format=None,
-                 filePath=None, finishOnKey=None, prefix=None,
-                 bothLegs=False, **kwargs):
-        Element.__init__(self, maxLength=maxLength,
-                         timeout=timeout, playBeep=playBeep,
-                         format=format, filePath=filePath,
-                         finishOnKey=finishOnKey, prefix=prefix,
-                         bothLegs=bothLegs, **kwargs)
+    VALID_ATTRS = ('timeout','finishOnKey',
+                   'maxLength', 'bothLegs', 'playBeep',
+                   'format', 'filePath', 'prefix')
+
+    def __init__(self, **kwargs):
+        Element.__init__(self, **kwargs)
 
 class PreAnswer(Element):
     """Answer the call in Early Media Mode and execute nested element
     """
-    def __init__(self, time=None, **kwargs):
-        Element.__init__(self, time=time, **kwargs)
+    VALID_ATTRS = ()
+
+    def __init__(self, **kwargs):
+        Element.__init__(self, **kwargs)
         self.nestables = ('Play', 'Speak', 'GetDigits', 'Wait')
 
 
