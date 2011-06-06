@@ -35,6 +35,6 @@ call_params = {
 }
 
 try:
-    print plivo.bulk_calls(call_params)
+    print plivo.bulk_call(call_params)
 except Exception, e:
     print e
