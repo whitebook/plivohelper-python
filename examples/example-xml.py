@@ -29,7 +29,9 @@ import plivohelper
 # Using Speak, Dial, and Play
 r = plivohelper.Response()
 r.append(plivohelper.Speak("Hello World", loop=10))
-r.append(plivohelper.Dial("4155551212", timeLimit=45))
+g = plivohelper.Dial(timeLimit=45)
+g.append(plivohelper.Number("4155551212"))
+r.append(g)
 r.append(plivohelper.Play("http://www.mp3.com"))
 print r
 print "\n\n"
@@ -45,7 +47,8 @@ print "\n\n"
 # The same XML can be created above using the convenience methods
 r = plivohelper.Response()
 r.addSpeak("Hello World", loop=10)
-r.addDial("4155551212", timeLimit=45)
+g = r.addDial(timeLimit=45)
+g.addNumber("4155551212")
 r.addHangup(schedule=10)
 r.addPlay("http://www.mp3.com")
 print r
@@ -96,12 +99,12 @@ print "\n\n"
 # To set arbitrary attribute / value pairs, just include the new attribute
 # as a named parameter
 r = plivohelper.Response()
-r.append(plivohelper.Redirect(crazy="delicious"))
+r.append(plivohelper.Redirect())
 print r
 print "\n\n"
 
 """ outputs:
 <Response>
-    <Redirect crazy="delicious"/>
+    <Redirect"/>
 </Response>
 """

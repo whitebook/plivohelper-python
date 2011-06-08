@@ -114,7 +114,8 @@ def phonemenu():
         r.addPlay("http://127.0.0.1:5000/static/duck.mp3")
     elif destination == 'receptionist':
         r.addSpeak("Please wait while we connect you")
-        r.addDial("NNNNNNNNNN")
+        g = r.addDial()
+        g.addNumber("NNNNNNNN")
     else:
         # default menu
         g = r.addGetDigits(numDigits=1,
