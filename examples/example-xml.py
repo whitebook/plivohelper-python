@@ -5,7 +5,7 @@ The RESTXML Python Response Library makes it easy to write RESTXML without havin
 to touch XML. Error checking is built in to help preventing invalid markup.
 
 USAGE:
-To create RESTXML, you will make RESTXML Grammar.
+To create RESTXML, you will make RESTXML Elements.
 Convenience methods are provided to simplify RESTXML creation.
 
 SUPPORTED GRAMMAR:
