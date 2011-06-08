@@ -291,8 +291,8 @@ class Element(object):
     def addNumber(self, number, **kwargs):
         return self.append(Number(number, **kwargs))
 
-    def addDial(self, number=None, **kwargs):
-        return self.append(Dial(number, **kwargs))
+    def addDial(self, **kwargs):
+        return self.append(Dial(**kwargs))
 
     def addRecord(self, **kwargs):
         return self.append(Record(**kwargs))
@@ -347,9 +347,9 @@ class Wait(Element):
     """Wait for some time to further process the call
 
     length: length of wait time in seconds
-    transferEnabled: if set to True allows the call to be transferred 
-        via REST API even while in waiting state. 
-        By default this is set to False, and in this case 
+    transferEnabled: if set to True allows the call to be transferred
+        via REST API even while in waiting state.
+        By default this is set to False, and in this case
         transfer will only happen once wait finishes.
     """
     VALID_ATTRS = ('length', 'transferEnabled')
@@ -386,7 +386,7 @@ class GetDigits(Element):
     finishOnKey: key that triggers the end of caller input
     """
     VALID_ATTRS = ('action', 'method', 'timeout', 'finishOnKey',
-                   'numDigits', 'retries', 'invalidDigitsSound', 
+                   'numDigits', 'retries', 'invalidDigitsSound',
                    'validDigits', 'playBeep')
 
     def __init__(self, **kwargs):
@@ -451,19 +451,12 @@ class Dial(Element):
     method: submit to 'action' url using GET or POST
     """
     VALID_ATTRS = ('action','method','timeout','hangupOnStar',
-                   'timeLimit','callerId', 'confirmSound', 
+                   'timeLimit','callerId', 'confirmSound',
                    'dialMusic', 'confirmKey')
 
-    def __init__(self, number=None, **kwargs):
+    def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
         self.nestables = ('Number',)
-        if number:
-            numbers = number.split(',')
-            if numbers:
-                for n in numbers:
-                    self.append(Number(n.strip()))
-            else:
-                self.body = number
 
 class Record(Element):
     """Record audio from caller
