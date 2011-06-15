@@ -1,3 +1,9 @@
+############################################
+# host/port binding for http server
+HOST = '127.0.0.1'
+PORT = 5000
+############################################
+
 from flask import Flask, request, render_template
 import urllib
 import plivohelper
@@ -99,4 +105,4 @@ if __name__ == '__main__':
     if not os.path.isfile("templates/response_template.xml"):
         print "Error : Can't find the XML template : templates/response_template.xml"
     else:
-        response_server.run(host='127.0.0.1', port=5000)
+        response_server.run(host=HOST, port=PORT)
