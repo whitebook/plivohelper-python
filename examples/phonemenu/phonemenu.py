@@ -66,11 +66,22 @@ def answered():
             print "CallUUID: %s" % request.form['CallUUID']
         except:
             pass
+
+        try:
+            print "All POST Params: %s" % request.form
+        except:
+            pass
     else:
         try:
             print "CallUUID: %s" % request.args['CallUUID']
         except:
             pass
+
+        try:
+            print "All GET Params: %s" % request.args
+        except:
+            pass
+
     return phonemenu()
 
 
