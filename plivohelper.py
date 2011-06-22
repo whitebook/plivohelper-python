@@ -435,10 +435,17 @@ class Conference(Element):
           (default 0, no timeLimit)
     hangupOnStar: exit conference when member press '*'
           (default false)
+    recordFilePath: path where recording is saved.
+        (default "" so recording wont happen)
+    recordFileFormat: file format in which recording tis saved
+        (default mp3)
+    recordFilePrefix: prefix added to the recorded file
+        (any custom prefix)
     """
     VALID_ATTRS = ('muted','beep','startConferenceOnEnter',
                    'endConferenceOnExit','waitSound','enterSound', 'exitSound',
-                   'timeLimit', 'hangupOnStar', 'maxMembers')
+                   'timeLimit', 'hangupOnStar', 'maxMembers', 'recordFilePath',
+                   'recordFileFormat', 'recordFilePrefix')
 
     def __init__(self, room, **kwargs):
         Element.__init__(self, **kwargs)
@@ -473,7 +480,7 @@ class Record(Element):
     """
     VALID_ATTRS = ('timeout','finishOnKey',
                    'maxLength', 'bothLegs', 'playBeep',
-                   'format', 'filePath', 'prefix')
+                   'fileFormat', 'filePath', 'prefix')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
