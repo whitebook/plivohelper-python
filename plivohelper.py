@@ -439,13 +439,13 @@ class Conference(Element):
         (default "" so recording wont happen)
     recordFileFormat: file format in which recording tis saved
         (default mp3)
-    recordFilePrefix: prefix added to the recorded file
-        (any custom prefix)
+    recordFilename: By default empty, if provided this name will be used for the recording
+        (any unique name)
     """
     VALID_ATTRS = ('muted','beep','startConferenceOnEnter',
                    'endConferenceOnExit','waitSound','enterSound', 'exitSound',
                    'timeLimit', 'hangupOnStar', 'maxMembers', 'recordFilePath',
-                   'recordFileFormat', 'recordFilePrefix')
+                   'recordFileFormat', 'recordFilename')
 
     def __init__(self, room, **kwargs):
         Element.__init__(self, **kwargs)
@@ -474,13 +474,13 @@ class Record(Element):
     format: file format (default mp3)
     filePath: complete file path to save the file to
     finishOnKey: Stop recording on this key
-    prefix: prefix appended to record file
+    filename: filename to be used for recording of file
     bothLegs: record both legs (true/false, default false)
               no beep will be played
     """
     VALID_ATTRS = ('timeout','finishOnKey',
                    'maxLength', 'bothLegs', 'playBeep',
-                   'fileFormat', 'filePath', 'prefix')
+                   'fileFormat', 'filePath', 'filename')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
