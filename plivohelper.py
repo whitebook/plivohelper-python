@@ -468,6 +468,8 @@ class Dial(Element):
 class Record(Element):
     """Record audio from caller
 
+    action: submit the result of the record to this URL
+    method: submit to 'action' url using GET or POST
     maxLength: maximum number of seconds to record (default 60)
     timeout: seconds of silence before considering the recording complete (default 500)
     playBeep: play a beep before recording (true/false, default true)
@@ -478,7 +480,7 @@ class Record(Element):
     bothLegs: record both legs (true/false, default false)
               no beep will be played
     """
-    VALID_ATTRS = ('timeout','finishOnKey',
+    VALID_ATTRS = ('action', 'method', 'timeout','finishOnKey',
                    'maxLength', 'bothLegs', 'playBeep',
                    'fileFormat', 'filePath', 'filename')
 
