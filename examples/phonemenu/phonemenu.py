@@ -53,6 +53,20 @@ def hangup():
     print "We got a hangup notification"
     return "OK"
 
+
+@response_server.route('/heartbeat/', methods=['GET', 'POST'])
+def heartbeat():
+    """Call Heartbeat URL"""
+    print "We got a call heartbeat notification\n"
+
+    if request.method == 'POST':
+        print request.form
+    else:
+        print request.args
+
+    return "OK"
+
+
 @response_server.route('/answered/', methods=['GET', 'POST'])
 def answered():
     # Post params- 'CallUUID': unique id of call, 'Direction': direction of call,
