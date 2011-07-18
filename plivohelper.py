@@ -467,11 +467,20 @@ class Conference(Element):
         (default mp3)
     recordFilename: By default empty, if provided this name will be used for the recording
         (any unique name)
+    action: redirect to this URL after leaving conference
+    method: submit to 'action' url using GET or POST
+    callbackUrl: url to request when call enters/leaves conference
+            or has pressed digits matching (digitsMatch)
+    callbackMethod: submit to 'callbackUrl' url using GET or POST
+    digitsMatch: a list of matching digits to send with callbackUrl
+            Can be a list of digits patterns separated by comma.
+
     """
     VALID_ATTRS = ('muted','beep','startConferenceOnEnter',
                    'endConferenceOnExit','waitSound','enterSound', 'exitSound',
                    'timeLimit', 'hangupOnStar', 'maxMembers', 'recordFilePath',
-                   'recordFileFormat', 'recordFilename')
+                   'recordFileFormat', 'recordFilename', 'action', 'method',
+                   'digitsMatch', 'callbackUrl', 'callbackMethod')
 
     def __init__(self, room, **kwargs):
         Element.__init__(self, **kwargs)
@@ -480,12 +489,21 @@ class Conference(Element):
 class Dial(Element):
     """Dial another phone number and connect it to this call
 
-    action: submit the result of the dial to this URL
+    action: submit the result of the dial and redirect to this URL 
     method: submit to 'action' url using GET or POST
+    hangupOnStar: hangup the b leg if a leg presses start and this is true
+    callerId: caller id to be send to the dialed number
+    timeLimit: hangup the call after these many seconds. 0 means no timeLimit
+    confirmSound: Sound to be played to b leg before call is bridged
+    confirmKey: Key to be pressed to bridge the call.
+    dialMusic: Play music to a leg while doing a dial to b leg
+                Can be a list of files separated by comma
+    redirect: if 'false', don't redirect to 'action', only request url 
+        and continue to next element. (default 'true')
     """
     VALID_ATTRS = ('action','method','timeout','hangupOnStar',
                    'timeLimit','callerId', 'confirmSound',
-                   'dialMusic', 'confirmKey')
+                   'dialMusic', 'confirmKey', 'redirect')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
