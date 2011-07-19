@@ -185,6 +185,91 @@ class REST(object):
         method = 'POST'
         return self.request(path, method, call_params)
 
+    def conference_mute(self, call_params):
+        """REST Conference Mute helper
+        """
+        path = '/' + self.api_version + '/ConferenceMute/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_unmute(self, call_params):
+        """REST Conference Unmute helper
+        """
+        path = '/' + self.api_version + '/ConferenceUnmute/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_kick(self, call_params):
+        """REST Conference Kick helper
+        """
+        path = '/' + self.api_version + '/ConferenceKick/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_hangup(self, call_params):
+        """REST Conference Hangup helper
+        """
+        path = '/' + self.api_version + '/ConferenceHangup/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_deaf(self, call_params):
+        """REST Conference Deaf helper
+        """
+        path = '/' + self.api_version + '/ConferenceDeaf/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_undeaf(self, call_params):
+        """REST Conference Undeaf helper
+        """
+        path = '/' + self.api_version + '/ConferenceUndeaf/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_record_start(self, call_params):
+        """REST Conference RecordStart helper
+        """
+        path = '/' + self.api_version + '/ConferenceRecordStart/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_record_stop(self, call_params):
+        """REST Conference RecordStop
+        """
+        path = '/' + self.api_version + '/ConferenceRecordStop/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_play(self, call_params):
+        """REST Conference Play helper
+        """
+        path = '/' + self.api_version + '/ConferencePlay/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_speak(self, call_params):
+        """REST Conference Speak helper
+        """
+        path = '/' + self.api_version + '/ConferenceSpeak/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_list(self, call_params):
+        """REST Conference List Helper
+        """
+        path = '/' + self.api_version + '/ConferenceList/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def conference_list_members(self, call_params):
+        """REST Conference List Members Helper
+        """
+        path = '/' + self.api_version + '/ConferenceListMembers/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+
 
 # RESTXML Response Helpers
 # ===========================================================================
