@@ -28,6 +28,17 @@ def hangup():
     print "We got a hangup notification"
     return "OK"
 
+@response_server.route('/recorded/', methods=['GET', 'POST'])
+def recorded():
+    if request.method == 'POST':
+        print request.form.items()
+    else:
+        print request.args.items()
+    r = plivohelper.Response()
+    r.addHangup()
+    print "RESTXML Response => %s" % r
+    return render_template('response_template.xml', response=r)
+
 @response_server.route('/answered/', methods=['GET', 'POST'])
 def answered():
     # Post params- 'CallUUID': unique id of call, 'Direction': direction of call,
@@ -49,6 +60,7 @@ def answered():
     r = plivohelper.Response()
     r.addRecord(timeout=5, finishOnKey="#",
                 maxLength=30, playBeep=True, 
+                action="http://127.0.0.1:5000/recorded/",
                 filePath="/tmp")
     print "RESTXML Response => %s" % r
     return render_template('response_template.xml', response=r)

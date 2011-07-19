@@ -32,24 +32,10 @@ def hangup():
 def dialed():
     if request.method == 'POST':
         print request.form.items()
-        hangup_cause = request.form['HangupCause']
-        ring_status = request.form['RingStatus']
-        try:
-            print "CallUUID: %s" % request.form['CallUUID']
-        except:
-            pass
     else:
         print request.args.items()
-        hangup_cause = request.args['HangupCause']
-        ring_status = request.args['RingStatus']
-        try:
-            print "CallUUID: %s" % request.args['CallUUID']
-        except:
-            pass
     r = plivohelper.Response()
-    r.addSpeak("Dial Hangup Cause is %s" % hangup_cause)
-    r.addSpeak("Dial Ring Status is %s" % ring_status)
-    r.addSpeak("Dial Ended")
+    r.addSpeak("Dial done")
     print "RESTXML Response => %s" % r
     return render_template('response_template.xml', response=r)
 
@@ -75,7 +61,7 @@ def answered():
     r.addSpeak("Dial Test")
     d = r.addDial(action="http://127.0.0.1:5000/dialed/",
                   hangupOnStar=True, timeLimit=60)
-    d.addNumber("4871", gateways="sofia/gateway/pstn", gatewayTimeouts="30")
+    d.addNumber("4871", gateways="sofia/gateway/pstn/", gatewayTimeouts="30")
     d.addNumber("1749", gateways="sofia/gateway/pstn", gatewayTimeouts="30")
     print "RESTXML Response => %s" % r
     return render_template('response_template.xml', response=r)
