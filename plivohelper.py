@@ -185,6 +185,20 @@ class REST(object):
         method = 'POST'
         return self.request(path, method, call_params)
 
+    def record_start(self, call_params):
+        """REST RecordStart helper
+        """
+        path = '/' + self.api_version + '/RecordStart/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def record_stop(self, call_params):
+        """REST RecordStop
+        """
+        path = '/' + self.api_version + '/RecordStop/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
     def conference_mute(self, call_params):
         """REST Conference Mute helper
         """
