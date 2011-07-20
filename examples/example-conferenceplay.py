@@ -8,7 +8,7 @@ try:
     memberid = sys.argv[2]
     soundfile = sys.argv[3]
 except IndexError:
-    print "Need Room, MemberID, FilePath args"
+    print "Need ConferenceName, MemberID, FilePath args"
     sys.exit(1)
 
 # URL of the Plivo REST Service
@@ -22,7 +22,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'Room':room, 'MemberID':memberid, 'FilePath':soundfile}
+call_params = {'ConferenceName':room, 'MemberID':memberid, 'FilePath':soundfile}
 
 try:
     print plivo.conference_play(call_params)

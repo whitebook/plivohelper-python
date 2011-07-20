@@ -8,7 +8,7 @@ try:
     fileformat = sys.argv[2]
     filepath = sys.argv[3]
 except IndexError:
-    print "Need Room, FileFormat, FilePath args"
+    print "Need ConferenceName, FileFormat, FilePath args"
     sys.exit(1)
 try:
     filename = sys.argv[4]
@@ -26,7 +26,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'Room':room, 'FileFormat':fileformat, 'FilePath':filepath, 'Filename':filename}
+call_params = {'ConferenceName':room, 'FileFormat':fileformat, 'FilePath':filepath, 'Filename':filename}
 
 try:
     print plivo.conference_record_start(call_params)

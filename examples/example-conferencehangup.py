@@ -7,7 +7,7 @@ try:
     room = sys.argv[1]
     memberid = sys.argv[2]
 except IndexError:
-    print "Need Room and MemberID args"
+    print "Need ConferenceName and MemberID args"
     sys.exit(1)
 
 # URL of the Plivo REST Service
@@ -21,7 +21,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'Room':room, 'MemberID':memberid}
+call_params = {'ConferenceName':room, 'MemberID':memberid}
 
 try:
     print plivo.conference_hangup(call_params)

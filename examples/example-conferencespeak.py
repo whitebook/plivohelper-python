@@ -8,7 +8,7 @@ try:
     memberid = sys.argv[2]
     text = sys.argv[3]
 except IndexError:
-    print "Need Room, MemberID, Text args"
+    print "Need ConferenceName, MemberID, Text args"
     sys.exit(1)
 
 # URL of the Plivo REST Service
@@ -22,7 +22,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'Room':room, 'MemberID':memberid, 'Text':text}
+call_params = {'ConferenceName':room, 'MemberID':memberid, 'Text':text}
 
 try:
     print plivo.conference_speak(call_params)
