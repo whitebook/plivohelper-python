@@ -136,6 +136,13 @@ class REST(object):
             return json.loads(self._appengine_fetch(uri, data, method))
         return json.loads(self._urllib2_fetch(uri, data, method))
 
+    def reload_config(self, call_params):
+        """REST Reload Plivo Config helper
+        """
+        path = '/' + self.api_version + '/ReloadConfig/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
     def call(self, call_params):
         """REST Call Helper
         """
