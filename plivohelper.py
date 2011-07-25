@@ -571,7 +571,7 @@ class Conference(Element):
         (default "" so recording wont happen)
     recordFileFormat: file format in which recording tis saved
         (default mp3)
-    recordFilename: By default empty, if provided this name will be used for the recording
+    recordFileName: By default empty, if provided this name will be used for the recording
         (any unique name)
     action: redirect to this URL after leaving conference
     method: submit to 'action' url using GET or POST
@@ -585,7 +585,7 @@ class Conference(Element):
     VALID_ATTRS = ('muted','beep','startConferenceOnEnter',
                    'endConferenceOnExit','waitSound','enterSound', 'exitSound',
                    'timeLimit', 'hangupOnStar', 'maxMembers', 'recordFilePath',
-                   'recordFileFormat', 'recordFilename', 'action', 'method',
+                   'recordFileFormat', 'recordFileName', 'action', 'method',
                    'digitsMatch', 'callbackUrl', 'callbackMethod')
 
     def __init__(self, room, **kwargs):
@@ -606,10 +606,13 @@ class Dial(Element):
                 Can be a list of files separated by comma
     redirect: if 'false', don't redirect to 'action', only request url 
         and continue to next element. (default 'true')
+    callbackUrl: url to request when bridge starts and bridge ends
+    callbackMethod: submit to 'callbackUrl' url using GET or POST
     """
     VALID_ATTRS = ('action','method','timeout','hangupOnStar',
                    'timeLimit','callerId', 'confirmSound',
-                   'dialMusic', 'confirmKey', 'redirect')
+                   'dialMusic', 'confirmKey', 'redirect',
+                   'callbackUrl', 'callbackMethod')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
@@ -626,13 +629,13 @@ class Record(Element):
     format: file format (default mp3)
     filePath: complete file path to save the file to
     finishOnKey: Stop recording on this key
-    filename: filename to be used for recording of file
+    fileName: filename to be used for recording of file
     bothLegs: record both legs (true/false, default false)
               no beep will be played
     """
     VALID_ATTRS = ('action', 'method', 'timeout','finishOnKey',
                    'maxLength', 'bothLegs', 'playBeep',
-                   'fileFormat', 'filePath', 'filename')
+                   'fileFormat', 'filePath', 'fileName')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)

@@ -30,7 +30,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'CallUUID':calluuid, 'FileFormat':fileformat, 'FilePath':filepath, 'Filename':filename, 'TimeLimit':timelimit}
+call_params = {'CallUUID':calluuid, 'FileFormat':fileformat, 'FilePath':filepath, 'FileName':filename, 'TimeLimit':timelimit}
 
 try:
     print plivo.record_start(call_params)

@@ -26,7 +26,7 @@ AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 # Create a REST object
 plivo = plivohelper.REST(REST_API_URL, SID, AUTH_TOKEN, API_VERSION)
 
-call_params = {'ConferenceName':room, 'FileFormat':fileformat, 'FilePath':filepath, 'Filename':filename}
+call_params = {'ConferenceName':room, 'FileFormat':fileformat, 'FilePath':filepath, 'FileName':filename}
 
 try:
     print plivo.conference_record_start(call_params)
