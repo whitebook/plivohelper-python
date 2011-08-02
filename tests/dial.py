@@ -39,6 +39,24 @@ def dialed():
     print "RESTXML Response => %s" % r
     return render_template('response_template.xml', response=r)
 
+@response_server.route('/dialmusic/', methods=['GET', 'POST'])
+def dialmusic():
+    r = plivohelper.Response()
+    r.addSpeak("Calling now", loop=1)
+    r.addPlay("http://127.0.0.1:5000/static/duck.mp3", loop=1)
+    r.addPlay("http://127.0.0.1:5000/static/duck.mp3", loop=1)
+    print "RESTXML Response => %s" % r
+    return render_template('response_template.xml', response=r)
+
+@response_server.route('/confirm/', methods=['GET', 'POST'])
+def confirm():
+    r = plivohelper.Response()
+    r.addSpeak("Confirm by pressing 9", loop=1)
+    r.addPlay("http://127.0.0.1:5000/static/duck.mp3", loop=1)
+    r.addPlay("http://127.0.0.1:5000/static/duck.mp3", loop=1)
+    print "RESTXML Response => %s" % r
+    return render_template('response_template.xml', response=r)
+
 @response_server.route('/answered/', methods=['GET', 'POST'])
 def answered():
     # Post params- 'CallUUID': unique id of call, 'Direction': direction of call,
@@ -60,7 +78,10 @@ def answered():
     r = plivohelper.Response()
     r.addSpeak("Dial Test")
     d = r.addDial(action="http://127.0.0.1:5000/dialed/",
-                  hangupOnStar=True, timeLimit=60)
+                  hangupOnStar=True, timeLimit=60,
+                  dialMusic="http://127.0.0.1:5000/dialmusic/",
+                  confirmSound="http://127.0.0.1:5000/confirm/",
+                  confirmKey="9")
     d.addNumber("4871", gateways="sofia/gateway/pstn/", gatewayTimeouts="30")
     d.addNumber("1749", gateways="sofia/gateway/pstn", gatewayTimeouts="30")
     print "RESTXML Response => %s" % r

@@ -28,6 +28,20 @@ def hangup():
     print "We got a hangup notification"
     return "OK"
 
+@response_server.route('/waitmusic/', methods=['GET', 'POST'])
+def waitmusic():
+    if request.method == 'POST':
+        print request.form.items()
+    else:
+        print request.args.items()
+    r = plivohelper.Response()
+    r.addSpeak("Please wait")
+    r.addSpeak("Be patient")
+    #r.addPlay("http://127.0.0.1:5000/static/duck.mp3")
+    r.addPlay("/usr/local/freeswitch/sounds/en/us/callie/ivr/8000/ivr-welcome.wav")
+    print "RESTXML Response => %s" % r
+    return render_template('response_template.xml', response=r)
+
 @response_server.route('/answered/', methods=['GET', 'POST'])
 def answered():
     # Post params- 'CallUUID': unique id of call, 'Direction': direction of call,
@@ -50,7 +64,7 @@ def answered():
     p = r.addConference("plivo", muted=False, 
                         enterSound="beep:2", exitSound="beep:1",
                         startConferenceOnEnter=True, endConferenceOnExit=True,
-                        waitSound="http://127.0.0.1:5000/static/duck.mp3",
+                        waitSound="http://127.0.0.1:5000/waitmusic/",
                         timeLimit=60, hangupOnStar=True)
     print "RESTXML Response => %s" % r
     return render_template('response_template.xml', response=r)
