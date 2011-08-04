@@ -171,19 +171,19 @@ class REST(object):
         method = 'POST'
         return self.request(path, method, call_params)
 
-    def hangup_call(self, call_params):
-        """REST Hangup Live Call Helper
-        """
-        path = '/' + self.api_version + '/HangupCall/'
-        method = 'POST'
-        return self.request(path, method, call_params)
-
     def hangup_all_calls(self):
         """REST Hangup All Live Calls Helper
         """
         path = '/' + self.api_version + '/HangupAllCalls/'
         method = 'POST'
         return self.request(path, method)
+
+    def hangup_call(self, call_params):
+        """REST Hangup Live Call Helper
+        """
+        path = '/' + self.api_version + '/HangupCall/'
+        method = 'POST'
+        return self.request(path, method, call_params)
 
     def schedule_hangup(self, call_params):
         """REST Schedule Hangup Helper
@@ -217,6 +217,27 @@ class REST(object):
         """REST Conference Mute helper
         """
         path = '/' + self.api_version + '/ConferenceMute/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def play(self, call_params):
+        """REST Play something on a Call Helper
+        """
+        path = '/' + self.api_version + '/Play/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def schedule_play(self, call_params):
+        """REST Schedule playing something on a call Helper
+        """
+        path = '/' + self.api_version + '/SchedulePlay/'
+        method = 'POST'
+        return self.request(path, method, call_params)
+
+    def cancel_scheduled_play(self, call_params):
+        """REST Cancel a Scheduled Play Helper
+        """
+        path = '/' + self.api_version + '/CancelScheduledPlay/'
         method = 'POST'
         return self.request(path, method, call_params)
 
