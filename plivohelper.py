@@ -640,7 +640,7 @@ class Dial(Element):
     VALID_ATTRS = ('action','method','timeout','hangupOnStar',
                    'timeLimit','callerId', 'confirmSound',
                    'dialMusic', 'confirmKey', 'redirect',
-                   'callbackUrl', 'callbackMethod')
+                   'callbackUrl', 'callbackMethod', 'digitsMatch')
 
     def __init__(self, **kwargs):
         Element.__init__(self, **kwargs)
